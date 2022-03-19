@@ -23,6 +23,7 @@ namespace NetFramework.Tasks.Management.Tests
             TaskManagementStatus taskManagementStatus = _taskManagement.RegisterTask(simpleTaskName, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), cancellationTokenSource);
 
             Assert.Equal(TaskManagementStatus.Added, taskManagementStatus);
+            _taskManagement.ClearConcurrentLists();
         }
 
         [Fact]
@@ -33,6 +34,7 @@ namespace NetFramework.Tasks.Management.Tests
             TaskManagementStatus taskManagementStatus = _taskManagement.RegisterTask(simpleTaskName, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), null);
 
             Assert.Equal(TaskManagementStatus.CancellationTokenSourceNotFound, taskManagementStatus);
+            _taskManagement.ClearConcurrentLists();
         }
 
         [Fact]
@@ -46,6 +48,7 @@ namespace NetFramework.Tasks.Management.Tests
             taskManagementStatus = _taskManagement.RegisterTask(simpleTaskName, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), cancellationTokenSource2);
 
             Assert.Equal(TaskManagementStatus.AlreadyRegistered, taskManagementStatus);
+            _taskManagement.ClearConcurrentLists();
         }
 
         [Fact]
@@ -55,6 +58,7 @@ namespace NetFramework.Tasks.Management.Tests
             TaskManagementStatus taskManagementStatus = _taskManagement.RegisterTask(null, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), cancellationTokenSource);
 
             Assert.Equal(TaskManagementStatus.NameInputNotFound, taskManagementStatus);
+            _taskManagement.ClearConcurrentLists();
         }
 
         [Fact]
@@ -64,6 +68,7 @@ namespace NetFramework.Tasks.Management.Tests
             TaskManagementStatus taskManagementStatus = _taskManagement.RegisterTask(string.Empty, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), cancellationTokenSource);
 
             Assert.Equal(TaskManagementStatus.NameInputNotFound, taskManagementStatus);
+            _taskManagement.ClearConcurrentLists();
         }
 
         [Fact]
@@ -73,6 +78,7 @@ namespace NetFramework.Tasks.Management.Tests
             TaskManagementStatus taskManagementStatus = _taskManagement.RegisterTask(string.Empty, null, cancellationTokenSource);
 
             Assert.Equal(TaskManagementStatus.NameInputNotFound, taskManagementStatus);
+            _taskManagement.ClearConcurrentLists();
         }
     }
 }
