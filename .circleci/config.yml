@@ -23,6 +23,7 @@ jobs:
           working_directory: /src/NetFramework.Tasks.Management.xUnit.Tests
           name: Run tests
           command: |
+            ls
             dotnet test NetFramework.Tasks.Management.xUnit.Tests.csproj --filter DisplayName~TaskManagementCancelAllTasksTest
             dotnet test NetFramework.Tasks.Management.xUnit.Tests.csproj --no-build --filter DisplayName~TaskManagementCancelTest
             dotnet test NetFramework.Tasks.Management.xUnit.Tests.csproj --no-build --filter DisplayName~TaskManagementCheckAllTaskStatusCompletedTest
