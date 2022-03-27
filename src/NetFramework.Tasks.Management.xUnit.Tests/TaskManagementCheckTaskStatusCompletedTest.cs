@@ -1,4 +1,6 @@
-﻿using NetFramework.Tasks.Management;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
+using NetFramework.Tasks.Management;
 using NetFramework.Tasks.Management.Abstractions.Enums;
 using System.Threading;
 using Xunit;
@@ -11,7 +13,8 @@ namespace NetFramework.Tasks.Management.Tests
 
         public TaskManagementCheckTaskStatusCompletedTest()
         {
-            _taskManagement = new TasksManagement();
+            var logger = new Mock<ILogger>();
+            _taskManagement = new TasksManagement(logger.Object);
         }
 
         [Fact]

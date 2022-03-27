@@ -1,4 +1,6 @@
-﻿using NetFramework.Tasks.Management;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
+using NetFramework.Tasks.Management;
 using NetFramework.Tasks.Management.Abstractions.Enums;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -13,7 +15,8 @@ namespace NetFramework.Tasks.Management.Tests
         [Fact]
         public void CancellAllTasksAcceptedtaskManagementCancelAllTasks_AllTasksCancelPetitionAcceptedStatus()
         {
-            TasksManagement taskManagement = new TasksManagement();
+            var logger = new Mock<ILogger>();
+            TasksManagement taskManagement = new TasksManagement(logger.Object);
 
             const string simpleTaskName = "tasktest1";
             const string simpleTaskNameTwo = "tasktest2";
@@ -36,7 +39,8 @@ namespace NetFramework.Tasks.Management.Tests
         [Fact]
         public void TaskNotAcceptedCancellationTokenSourceNotFoundtaskManagementCancelAllTasks_OneOrMoreTasksPetitionNotAcceptedStatus()
         {
-            TasksManagement taskManagement = new TasksManagement();
+            var logger = new Mock<ILogger>();
+            TasksManagement taskManagement = new TasksManagement(logger.Object);
 
             const string simpleTaskName = "tasktest1";
             const string simpleTaskNameTwo = "tasktest2";
@@ -59,7 +63,8 @@ namespace NetFramework.Tasks.Management.Tests
         [Fact]
         public void CancellAllTasksAcceptedExceptedTasktaskManagementCancelAllTasks_AllTasksCancelPetitionAcceptedStatus()
         {
-            TasksManagement taskManagement = new TasksManagement();
+            var logger = new Mock<ILogger>();
+            TasksManagement taskManagement = new TasksManagement(logger.Object);
 
             const string simpleTaskName = "tasktest1";
             const string simpleTaskNameTwo = "tasktest2";
@@ -82,7 +87,8 @@ namespace NetFramework.Tasks.Management.Tests
         [Fact]
         public void TaskNotAcceptedCancellationTokenSourceNotFoundExceptedTasktaskManagementCancelAllTasks_OneOrMoreTasksPetitionNotAcceptedStatus()
         {
-            TasksManagement taskManagement = new TasksManagement();
+            var logger = new Mock<ILogger>();
+            TasksManagement taskManagement = new TasksManagement(logger.Object);
 
             const string simpleTaskName = "tasktest1";
             const string simpleTaskNameTwo = "tasktest2";
