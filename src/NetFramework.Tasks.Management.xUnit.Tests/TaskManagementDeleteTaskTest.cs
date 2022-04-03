@@ -1,4 +1,6 @@
-﻿using NetFramework.Tasks.Management;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
+using NetFramework.Tasks.Management;
 using NetFramework.Tasks.Management.Abstractions.Enums;
 using NetFramework.Tasks.Management.Abstractions.Models;
 using System;
@@ -13,7 +15,8 @@ namespace NetFramework.Tasks.Management.Tests
 
         public TaskManagementDeleteTaskTest()
         {
-            _taskManagement = new TasksManagement();
+            var logger = new Mock<ILogger>();
+            _taskManagement = new TasksManagement(logger.Object);
         }
 
         [Fact]

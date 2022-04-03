@@ -1,4 +1,6 @@
-﻿using NetFramework.Tasks.Management;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
+using NetFramework.Tasks.Management;
 using NetFramework.Tasks.Management.Abstractions.Enums;
 using System.Threading;
 using Xunit;
@@ -10,132 +12,141 @@ namespace NetFramework.Tasks.Management.Tests
         [Fact]
         public void InputTaskNameEmptyCancelTask_TaskManagementRegister_NameInputNotFoundTaskStatus()
         {
-            TasksManagement _taskManagement = new TasksManagement();
-            TaskManagementStatus taskManagementStatus = _taskManagement.CancelTask(string.Empty);
+            var logger = new Mock<ILogger>();
+            TasksManagement taskManagement = new TasksManagement(logger.Object);
+            TaskManagementStatus taskManagementStatus = taskManagement.CancelTask(string.Empty);
 
             Assert.Equal(TaskManagementStatus.NameInputNotFound, taskManagementStatus);
-            _taskManagement.ClearConcurrentLists();
+            taskManagement.ClearConcurrentLists();
         }
 
         [Fact]
         public void InputTaskNameNullCancelTask_TaskManagementRegister_NameInputNotFoundTaskStatus()
         {
-            TasksManagement _taskManagement = new TasksManagement();
+            var logger = new Mock<ILogger>();
+            TasksManagement taskManagement = new TasksManagement(logger.Object);
 
-            TaskManagementStatus taskManagementStatus = _taskManagement.CancelTask(null);
+            TaskManagementStatus taskManagementStatus = taskManagement.CancelTask(null);
 
             Assert.Equal(TaskManagementStatus.NameInputNotFound, taskManagementStatus);
-            _taskManagement.ClearConcurrentLists();
+            taskManagement.ClearConcurrentLists();
         }
 
         [Fact]
         public void TaskNullNameNullCancelTask_TaskManagementRegister_TaskNotFoundTaskStatus()
         {
-            TasksManagement _taskManagement = new TasksManagement();
+            var logger = new Mock<ILogger>();
+            TasksManagement taskManagement = new TasksManagement(logger.Object);
 
             const string simpleTaskName = "tasktest";
 
-            TaskManagementStatus taskManagementStatus = _taskManagement.CancelTask(simpleTaskName);
+            TaskManagementStatus taskManagementStatus = taskManagement.CancelTask(simpleTaskName);
 
             Assert.Equal(TaskManagementStatus.TaskNotFound, taskManagementStatus);
-            _taskManagement.ClearConcurrentLists();
+            taskManagement.ClearConcurrentLists();
         }
 
         [Fact]
         public void CancellationTokenSourceNullCancelTask_TaskManagementRegister_CancellationTokenSourceNotFoundTaskStatus()
         {
-            TasksManagement _taskManagement = new TasksManagement();
+            var logger = new Mock<ILogger>();
+            TasksManagement taskManagement = new TasksManagement(logger.Object);
 
             const string simpleTaskName = "tasktest";
 
             var cancellationTokenSource = new CancellationTokenSource();
-            TaskManagementStatus taskManagementStatus = _taskManagement.RegisterTask(simpleTaskName, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), null);
-            taskManagementStatus = _taskManagement.CancelTask(simpleTaskName);
+            TaskManagementStatus taskManagementStatus = taskManagement.RegisterTask(simpleTaskName, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), null);
+            taskManagementStatus = taskManagement.CancelTask(simpleTaskName);
 
             Assert.Equal(TaskManagementStatus.TaskNotFound, taskManagementStatus);
-            _taskManagement.ClearConcurrentLists();
+            taskManagement.ClearConcurrentLists();
         }
 
         [Fact]
         public void TaskRegisteredNotStartedCancelTask_TaskManagementRegister_CancellationTokenSourceNotFoundTaskStatus()
         {
-            TasksManagement _taskManagement = new TasksManagement();
+            var logger = new Mock<ILogger>();
+            TasksManagement taskManagement = new TasksManagement(logger.Object);
 
             const string simpleTaskName = "tasktest";
 
             var cancellationTokenSource = new CancellationTokenSource();
-            TaskManagementStatus taskManagementStatus = _taskManagement.RegisterTask(simpleTaskName, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), cancellationTokenSource);
-            taskManagementStatus = _taskManagement.CancelTask(simpleTaskName);
+            TaskManagementStatus taskManagementStatus = taskManagement.RegisterTask(simpleTaskName, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), cancellationTokenSource);
+            taskManagementStatus = taskManagement.CancelTask(simpleTaskName);
 
             Assert.Equal(TaskManagementStatus.Canceled, taskManagementStatus);
-            _taskManagement.ClearConcurrentLists();
+            taskManagement.ClearConcurrentLists();
         }
 
         [Fact]
         public void TaskRegisteredCompletedCancelTask_TaskManagementRegister_CancellationTokenSourceNotFoundTaskStatus()
         {
-            TasksManagement _taskManagement = new TasksManagement();
+            var logger = new Mock<ILogger>();
+            TasksManagement taskManagement = new TasksManagement(logger.Object);
 
             const string simpleTaskName = "tasktest";
 
             var cancellationTokenSource = new CancellationTokenSource();
-            TaskManagementStatus taskManagementStatus = _taskManagement.RegisterTask(simpleTaskName, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), cancellationTokenSource);
-            taskManagementStatus = _taskManagement.StartTask(simpleTaskName);
-            taskManagementStatus = _taskManagement.CheckTaskStatusCompleted(simpleTaskName, millisecondsCancellationWait: 1000);
-            taskManagementStatus = _taskManagement.CancelTask(simpleTaskName);
+            TaskManagementStatus taskManagementStatus = taskManagement.RegisterTask(simpleTaskName, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), cancellationTokenSource);
+            taskManagementStatus = taskManagement.StartTask(simpleTaskName);
+            taskManagementStatus = taskManagement.CheckTaskStatusCompleted(simpleTaskName, millisecondsCancellationWait: 1000);
+            taskManagementStatus = taskManagement.CancelTask(simpleTaskName);
 
             Assert.Equal(TaskManagementStatus.Canceled, taskManagementStatus);
-            _taskManagement.ClearConcurrentLists();
+            taskManagement.ClearConcurrentLists();
         }
 
         [Fact]
         public void TaskRegisteredFaultedCancelTask_TaskManagementRegister_CancellationTokenSourceNotFoundTaskStatus()
         {
-            TasksManagement _taskManagement = new TasksManagement();
+            var logger = new Mock<ILogger>();
+            TasksManagement taskManagement = new TasksManagement(logger.Object);
 
             const string simpleTaskName = "tasktest";
 
             var cancellationTokenSource = new CancellationTokenSource();
-            TaskManagementStatus taskManagementStatus = _taskManagement.RegisterTask(simpleTaskName, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), cancellationTokenSource);
-            taskManagementStatus = _taskManagement.StartTask(simpleTaskName);
-            taskManagementStatus = _taskManagement.CheckTaskStatusCompleted(simpleTaskName, millisecondsCancellationWait: 1000);
-            taskManagementStatus = _taskManagement.CancelTask(simpleTaskName);
+            TaskManagementStatus taskManagementStatus = taskManagement.RegisterTask(simpleTaskName, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), cancellationTokenSource);
+            taskManagementStatus = taskManagement.StartTask(simpleTaskName);
+            taskManagementStatus = taskManagement.CheckTaskStatusCompleted(simpleTaskName, millisecondsCancellationWait: 1000);
+            taskManagementStatus = taskManagement.CancelTask(simpleTaskName);
 
             Assert.Equal(TaskManagementStatus.Canceled, taskManagementStatus);
-            _taskManagement.ClearConcurrentLists();
+            taskManagement.ClearConcurrentLists();
         }
 
         [Fact]
         public void TaskRegisteredRunningCancelTask_TaskManagementRegister_CancellationTokenSourceNotFoundTaskStatus()
         {
-            TasksManagement _taskManagement = new TasksManagement();
+            var logger = new Mock<ILogger>();
+            TasksManagement taskManagement = new TasksManagement(logger.Object);
 
             const string simpleTaskName = "tasktest";
 
             var cancellationTokenSource = new CancellationTokenSource();
-            TaskManagementStatus taskManagementStatus = _taskManagement.RegisterTask(simpleTaskName, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), cancellationTokenSource);
-            taskManagementStatus = _taskManagement.StartTask(simpleTaskName);
-            taskManagementStatus = _taskManagement.CheckTaskStatusCompleted(simpleTaskName, millisecondsCancellationWait: 1000);
-            taskManagementStatus = _taskManagement.CancelTask(simpleTaskName);
+            TaskManagementStatus taskManagementStatus = taskManagement.RegisterTask(simpleTaskName, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), cancellationTokenSource);
+            taskManagementStatus = taskManagement.StartTask(simpleTaskName);
+            taskManagementStatus = taskManagement.CheckTaskStatusCompleted(simpleTaskName, millisecondsCancellationWait: 1000);
+            taskManagementStatus = taskManagement.CancelTask(simpleTaskName);
 
             Assert.Equal(TaskManagementStatus.Canceled, taskManagementStatus);
-            _taskManagement.ClearConcurrentLists();
+            taskManagement.ClearConcurrentLists();
         }
 
         [Fact]
         public void TaskRegisteredDoubleCancelTask_TaskManagementRegister_CancellationTokenSourceNotFoundTaskStatus()
         {
-            TasksManagement _taskManagement = new TasksManagement();
+            var logger = new Mock<ILogger>();
+            TasksManagement taskManagement = new TasksManagement(logger.Object);
 
             const string simpleTaskName = "tasktest";
 
             var cancellationTokenSource = new CancellationTokenSource();
-            TaskManagementStatus taskManagementStatus = _taskManagement.RegisterTask(simpleTaskName, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), cancellationTokenSource);
-            taskManagementStatus = _taskManagement.CancelTask(simpleTaskName);
-            taskManagementStatus = _taskManagement.CancelTask(simpleTaskName);
+            TaskManagementStatus taskManagementStatus = taskManagement.RegisterTask(simpleTaskName, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), cancellationTokenSource);
+            taskManagementStatus = taskManagement.CancelTask(simpleTaskName);
+            taskManagementStatus = taskManagement.CancelTask(simpleTaskName);
 
             Assert.Equal(TaskManagementStatus.Canceled, taskManagementStatus);
-            _taskManagement.ClearConcurrentLists();
+            taskManagement.ClearConcurrentLists();
         }
     }
 }
