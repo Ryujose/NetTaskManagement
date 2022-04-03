@@ -33,8 +33,11 @@ jobs:
         cd NetFramework.Task.Management
         dotnet build NetFramework.Tasks.Management.csproj --configuration Release /p:Version=${VERSION}
     - name: Pack
-      run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
+      run: | 
+        cd src
+        cd NetFramework.Task.Management
+        dotnet pack NetFramework.Tasks.Management.csproj --configuration Release /p:Version=${VERSION} --no-build --output .
     - name: Push
-      run: dotnet nuget push NuGet.Workflow.${VERSION}.nupkg --source https://nuget.pkg.github.com/ryujose/index.json --api-key ${NUGET_TOKEN}
+      run: dotnet nuget push NetFramework.Tasks.Management.${VERSION}.nupkg --source https://nuget.pkg.github.com/ryujose/index.json --api-key ${NUGET_TOKEN}
       env:
         GITHUB_TOKEN: ${{ secrets.NUGET_TOKEN }}
