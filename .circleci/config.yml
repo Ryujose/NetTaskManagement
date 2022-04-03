@@ -34,7 +34,8 @@ jobs:
             dotnet test NetFramework.Tasks.Management.xUnit.Tests.csproj --no-build --filter DisplayName~TaskManagementDeleteTaskTest
             dotnet test NetFramework.Tasks.Management.xUnit.Tests.csproj --no-build --filter DisplayName~TaskManagementGetCancellationTokenSourceTest
             dotnet test NetFramework.Tasks.Management.xUnit.Tests.csproj --no-build --filter DisplayName~TaskManagementRegisterTest
-            dotnet test NetFramework.Tasks.Management.xUnit.Tests.csproj --no-build --filter DisplayName~TaskManagementStartTest 
+            dotnet test NetFramework.Tasks.Management.xUnit.Tests.csproj --no-build --filter DisplayName~TaskManagementStartTest
+            dotnet test NetFramework.Tasks.Management.xUnit.Tests.csproj --no-build --filter DisplayName~TaskManagementGetTasksStatusTest
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
