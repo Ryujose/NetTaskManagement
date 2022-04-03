@@ -20,5 +20,6 @@ namespace NetFramework.Tasks.Management.Abstractions.Interfaces
         TaskManagementStatus CancelAllTasks(IList<string> except, ref ConcurrentDictionary<string, TaskManagementStatus> tasksCancelPetitionFailedRef);
         void CheckAllTaskStatusCompleted(
             IList<string> except, ref ConcurrentDictionary<string, TaskManagementStatus> tasksCompletedStatusRef, int retry = 3, int millisecondsCancellationWait = 15000);
+        Dictionary<string, TaskStatus> GetTasksStatus();
     }
 }
