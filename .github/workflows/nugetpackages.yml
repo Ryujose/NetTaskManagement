@@ -40,4 +40,4 @@ jobs:
     - name: Push
       run: dotnet nuget push NetFramework.Tasks.Management.${VERSION}.nupkg --source https://nuget.pkg.github.com/ryujose/index.json --api-key ${NUGET_TOKEN}
       env:
-        GITHUB_TOKEN: ${{ secrets.NUGET_TOKEN }}
+        NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
