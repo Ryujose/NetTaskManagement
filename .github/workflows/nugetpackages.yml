@@ -31,7 +31,7 @@ jobs:
       run: |
         cd src
         cd NetFramework.Task.Management
-        dotnet build NetFramework.Task.Management --configuration Release /p:Version=${VERSION}
+        dotnet build .\NetFramework.Tasks.Management.csproj --configuration Release /p:Version=${VERSION}
     - name: Pack
       run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
     - name: Push
