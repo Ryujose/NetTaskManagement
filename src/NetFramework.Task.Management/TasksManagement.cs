@@ -500,6 +500,11 @@ namespace NetFramework.Tasks.Management
             tasksCompletedStatusRef = tasksCompletedStatus;
         }
 
+        public Dictionary<string, TaskStatus> GetTasksStatus() => 
+            TasksDataModel.ToDictionary
+            (a => a.Key,
+             a => a.Value.Task.Status);
+
         public void ClearConcurrentLists()
         {
             foreach (var taskDataModel in TasksDataModel)

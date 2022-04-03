@@ -8,3 +8,4 @@ dotnet test --no-build --filter DisplayName~TaskManagementDeleteTaskTest
 dotnet test --no-build --filter DisplayName~TaskManagementGetCancellationTokenSourceTest
 dotnet test --no-build --filter DisplayName~TaskManagementRegisterTest
 dotnet test --no-build --filter DisplayName~TaskManagementStartTest
+dotnet test --no-build --filter DisplayName~TaskManagementGetTasksStatusTest
