@@ -38,6 +38,6 @@ jobs:
         cd NetFramework.Task.Management
         dotnet pack NetFramework.Tasks.Management.csproj --configuration Release /p:Version=${VERSION} --no-build --output .
     - name: Push
-      run: dotnet nuget push NetFramework.Tasks.Management.${VERSION}.nupkg --source https://nuget.pkg.github.com/ryujose/index.json --api-key ${NUGET_TOKEN}
+      run: dotnet nuget push /home/runner/work/NetTaskManagement/NetTaskManagement/src/NetFramework.Task.Management/NetFramework.Tasks.Management.${VERSION}.nupkg --source https://nuget.pkg.github.com/ryujose/index.json --api-key ${NUGET_TOKEN}
       env:
         NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
