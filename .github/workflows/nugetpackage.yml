@@ -31,16 +31,19 @@ jobs:
       run: |
         cd /home/runner/work/NetTaskManagement/NetTaskManagement/src/NetFramework.Task.Management/
         dotnet build NetFramework.Tasks.Management.csproj --configuration Release /p:Version=${VERSION}
+        cd /home/runner/work/NetTaskManagement/NetTaskManagement/src/NetFramework.Task.Management.Abstractions/
         dotnet build NetFramework.Tasks.Management.Abstractions.csproj --configuration Release /p:Version=${VERSION}
     - name: Pack
       run: | 
         cd /home/runner/work/NetTaskManagement/NetTaskManagement/src/NetFramework.Task.Management/
         dotnet pack NetFramework.Tasks.Management.csproj --configuration Release /p:Version=${VERSION} --no-build --output .
+        cd /home/runner/work/NetTaskManagement/NetTaskManagement/src/NetFramework.Task.Management.Abstractions/
         dotnet pack NetFramework.Tasks.Management.Abstractions.csproj --configuration Release /p:Version=${VERSION} --no-build --output .
     - name: Push
       run: | 
         cd /home/runner/work/NetTaskManagement/NetTaskManagement/src/NetFramework.Task.Management/
         dotnet nuget push NetFramework.Tasks.Management.${VERSION}.nupkg --source https://nuget.pkg.github.com/ryujose/index.json --api-key ${NUGET_TOKEN}
+        cd /home/runner/work/NetTaskManagement/NetTaskManagement/src/NetFramework.Task.Management.Abstractions/
         dotnet nuget push NetFramework.Tasks.Management.Abstractions.${VERSION}.nupkg --source https://nuget.pkg.github.com/ryujose/index.json --api-key ${NUGET_TOKEN}
       env:
         NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
