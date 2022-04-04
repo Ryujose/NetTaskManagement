@@ -6,7 +6,7 @@ on:
     - "v[0-9]+.[0-9]+.[0-9]+"
 env:
   DOTNET_VERSION: '2.2.110'
-  NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -42,16 +42,10 @@ jobs:
         dotnet pack NetFramework.Tasks.Management.Abstractions.csproj --configuration Release /p:Version=${VERSION} --no-build --output .
     - name: Push NetFramework.Tasks.Management
       run: | 
-        dotnet nuget list source
-        dotnet nuget disable source nuget.org
-        dotnet nuget enable source nuget.org
         cd /home/runner/work/NetTaskManagement/NetTaskManagement/src/NetFramework.Task.Management/
-        dotnet nuget push NetFramework.Tasks.Management.${VERSION}.nupkg --source https://nuget.pkg.github.com/ryujose/index.json --api-key ${NUGET_TOKEN}
+        dotnet nuget push NetFramework.Tasks.Management.${VERSION}.nupkg --source https://nuget.pkg.github.com/ryujose/index.json --api-key ${GITHUB_TOKEN}
     - name: Push NetFramework.Tasks.Management.Abstractions
       run: |
-        dotnet nuget list source
-        dotnet nuget disable source nuget.org
-        dotnet nuget enable source nuget.org
         cd /home/runner/work/NetTaskManagement/NetTaskManagement/src/NetFramework.Task.Management.Abstractions/
-        dotnet nuget push NetFramework.Tasks.Management.Abstractions.${VERSION}.nupkg --source https://nuget.pkg.github.com/ryujose/index.json --api-key ${NUGET_TOKEN}
+        dotnet nuget push NetFramework.Tasks.Management.Abstractions.${VERSION}.nupkg --source https://nuget.pkg.github.com/ryujose/index.json --api-key ${GITHUB_TOKEN}
         
