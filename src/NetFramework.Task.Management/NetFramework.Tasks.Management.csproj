@@ -7,7 +7,7 @@
   <PropertyGroup>
     <PackageId>NetFramework.Tasks.Management</PackageId>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/Ryujose/NetTaskManagement/actions</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Ryujose/NetTaskManagement</RepositoryUrl>
   </PropertyGroup>
   
   <ItemGroup>
