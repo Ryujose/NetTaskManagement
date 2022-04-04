@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>NuGet.Workflow</PackageId>
+    <PackageId>NuGet.Workflow.Implementation</PackageId>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Ryujose/NetTaskManagement/actions</RepositoryUrl>
   </PropertyGroup>

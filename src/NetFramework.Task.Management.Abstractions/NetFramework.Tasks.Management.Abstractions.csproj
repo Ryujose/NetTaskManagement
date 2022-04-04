@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>NuGet.Workflow</PackageId>
+    <PackageId>NuGet.Workflow.Abstractions</PackageId>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Ryujose/NetTaskManagement/actions</RepositoryUrl>
   </PropertyGroup>
