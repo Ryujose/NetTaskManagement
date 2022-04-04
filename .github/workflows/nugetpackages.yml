@@ -29,18 +29,18 @@ jobs:
         dotnet restore NetFramework.Task.Management
     - name: Build
       run: |
-        cd src
-        cd NetFramework.Task.Management
+        cd /home/runner/work/NetTaskManagement/NetTaskManagement/src/NetFramework.Task.Management/
         dotnet build NetFramework.Tasks.Management.csproj --configuration Release /p:Version=${VERSION}
+        dotnet build NetFramework.Tasks.Management.Abstractions.csproj --configuration Release /p:Version=${VERSION}
     - name: Pack
       run: | 
-        cd src
-        cd NetFramework.Task.Management
+        cd /home/runner/work/NetTaskManagement/NetTaskManagement/src/NetFramework.Task.Management/
         dotnet pack NetFramework.Tasks.Management.csproj --configuration Release /p:Version=${VERSION} --no-build --output .
+        dotnet pack NetFramework.Tasks.Management.Abstractions.csproj --configuration Release /p:Version=${VERSION} --no-build --output .
     - name: Push
       run: | 
-        cd src
-        cd NetFramework.Task.Management 
+        cd /home/runner/work/NetTaskManagement/NetTaskManagement/src/NetFramework.Task.Management/
         dotnet nuget push NetFramework.Tasks.Management.${VERSION}.nupkg --source https://nuget.pkg.github.com/ryujose/index.json --api-key ${NUGET_TOKEN}
+        dotnet nuget push NetFramework.Tasks.Management.Abstractions.${VERSION}.nupkg --source https://nuget.pkg.github.com/ryujose/index.json --api-key ${NUGET_TOKEN}
       env:
         NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
