@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>NuGet.Workflow.Abstractions</PackageId>
+    <PackageId>NetFramework.Tasks.Management.Abstractions</PackageId>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Ryujose/NetTaskManagement/actions</RepositoryUrl>
   </PropertyGroup>
