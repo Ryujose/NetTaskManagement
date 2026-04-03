@@ -6,8 +6,19 @@
 
   <PropertyGroup>
     <PackageId>NetFramework.Tasks.Management.Abstractions</PackageId>
+    <Authors>Jose Luis Guerra Infante</Authors>
+    <Copyright>Copyright © Jose Luis Guerra Infante</Copyright>
+    <Description>Interfaces, enums, and models for NetFramework.Tasks.Management — a .NET Standard 2.0 TPL orchestration library with Dependency Injection support. Reference this package when you only need the ITaskManagement contract and status types without depending on the core implementation.</Description>
+    <PackageTags>task tpl task-parallel-library dependency-injection abstractions interfaces netstandard dotnet</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Ryujose/NetTaskManagement</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Ryujose/NetTaskManagement</RepositoryUrl>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
   
 </Project>
