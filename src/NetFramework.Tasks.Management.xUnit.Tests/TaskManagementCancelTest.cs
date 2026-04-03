@@ -11,6 +11,7 @@ using Xunit;
 
 namespace NetFramework.Tasks.Management.Tests
 {
+    [Collection("TaskManagement")]
     public class TaskManagementCancelTest
     {
         [Fact]

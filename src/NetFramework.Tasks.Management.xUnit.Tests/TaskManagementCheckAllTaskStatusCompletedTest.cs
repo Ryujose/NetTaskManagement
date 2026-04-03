@@ -14,6 +14,7 @@ using Xunit;
 
 namespace NetFramework.Tasks.Management.Tests
 {
+    [Collection("TaskManagement")]
     public class TaskManagementCheckAllTaskStatusCompletedTest
     {
         [Fact]

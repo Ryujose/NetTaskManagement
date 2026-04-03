@@ -17,7 +17,8 @@ using Xunit;
 
 namespace NetFramework.Tasks.Management.Tests
 {
-    public class TaskManagementDeleteTaskTest 
+    [Collection("TaskManagement")]
+    public class TaskManagementDeleteTaskTest : IDisposable
     {
         TasksManagement _taskManagement;
 
@@ -25,6 +26,11 @@ namespace NetFramework.Tasks.Management.Tests
         {
             var logger = new Mock<ILogger>();
             _taskManagement = new TasksManagement(logger.Object);
+        }
+
+        public void Dispose()
+        {
+            _taskManagement.ClearConcurrentLists();
         }
 
         [Fact]
