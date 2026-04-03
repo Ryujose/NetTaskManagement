@@ -6,10 +6,21 @@
 
   <PropertyGroup>
     <PackageId>NetFramework.Tasks.Management</PackageId>
+    <Authors>Jose Luis Guerra Infante</Authors>
+    <Copyright>Copyright © Jose Luis Guerra Infante</Copyright>
+    <Description>A .NET Standard 2.0 library for Task Parallel Library (TPL) orchestration with Dependency Injection support. Tasks are identified by string key and managed through a status-based API — register, start, cancel, check completion, and delete — without exposing raw Task objects to callers. Includes an append-only observability queue that captures disposal metadata for external monitoring.</Description>
+    <PackageTags>task tpl task-parallel-library dependency-injection orchestration netstandard dotnet</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Ryujose/NetTaskManagement</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Ryujose/NetTaskManagement</RepositoryUrl>
   </PropertyGroup>
   
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
