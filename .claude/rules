@@ -1,0 +1,38 @@
+# Project Rules
+
+## Thread Safety
+Always use `ConcurrentDictionary` or `ConcurrentQueue` for any shared task state. Never use plain `Dictionary`, `List`, or other non-thread-safe collections to store task data — concurrent callers are the primary use case of this library.
+
+## Static Fields Are Intentional — Do Not Change to Instance Fields
+`TasksDataModel` and `TaskDisposedDataModel` are `static` by design. The static field makes the in-memory registry process-wide and shared across all DI scopes. Converting them to instance fields would break cross-scope task visibility even though the service is registered as a singleton. Do not refactor them.
+
+## DeleteTask() Ordering Is an Invariant
+The steps inside `DeleteTask()` must stay in this exact order: (1) capture metadata as local primitives, (2) TryRemove from dict, (3) Dispose Task + CTS, (4) null the local `taskDataModel` reference, (5) GC.Collect() + WaitForPendingFinalizers(), (6) build and optionally enqueue `TaskDisposedDataModel`. Changing this order breaks the guarantee that `TaskDataModel` is collected during the call. The GC call is intentionally synchronous and blocking — callers rely on the task being fully gone from memory when `DeleteTask()` returns.
+
+## Status Returns, Not Exceptions
+Public API methods must return a `TaskManagementStatus` enum value for all expected outcomes (including errors). Do not let exceptions propagate out of public methods. Internal helpers may throw, but must be caught at the public boundary and mapped to the appropriate status value.
+
+## Interface First
+Any new public behavior must be defined in `ITaskManagement` inside the Abstractions project **before** implementing it in the core library. Callers depend on the interface, not the concrete class.
+
+## Logging Is Required
+Every public method must log entry, exit, and error conditions via the injected `ILogger`. Do not use `Console.Write`, `Debug.Write`, or any other logging mechanism. Structured log messages are preferred.
+
+## Target Framework Constraint
+Both library projects (`NetFramework.Task.Management` and `NetFramework.Task.Management.Abstractions`) must remain on `netstandard2.0`. Do not introduce APIs, packages, or language features that are unavailable in that target.
+
+## Keep TPL Internals Encapsulated
+Callers identify and interact with tasks using string keys only. Do not expose raw `Task`, `CancellationToken`, or `CancellationTokenSource` objects through the public API. TPL implementation details stay inside the service.
+
+## Test Isolation
+Each xUnit test class must mock `ILogger` using `Moq` and must not share mutable state with other test classes. Do not use real loggers, static state, or `Thread.Sleep` in tests — use the cancellation/status APIs provided by the library.
+
+## Testing GC Collection — Use WeakReference&lt;TaskDataModel&gt;, Not WeakReference&lt;Task&gt;
+When writing tests that assert memory is freed during `DeleteTask()`, track `TaskDataModel` via `WeakReference<TaskDataModel>`, not `WeakReference<Task>`. The .NET runtime holds internal references to `Task` objects (scheduler, thread pool) that prevent them from being collected even after all user references are released. `TaskDataModel` is our own class with no runtime-internal references and is reliably collectible. Always obtain the `WeakReference` in a separate `[MethodImpl(MethodImplOptions.NoInlining)]` helper method to prevent the JIT from keeping a strong reference on the calling stack.
+
+## Naming Conventions
+- Task wrapper model: `TaskDataModel`
+- Disposal tracking model: `TaskDisposedDataModel`
+- Status enum values: prefixed `TaskManagementStatus.*`
+- Interface names: prefixed `ITaskManagement*`
+- DI extension methods: `Add*` pattern on `IServiceCollection`

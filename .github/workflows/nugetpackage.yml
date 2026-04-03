@@ -1,51 +1,56 @@
-name: nuget packages release
+name: NuGet Release
 
 on:
   push:
     tags:
-    - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
 env:
-  DOTNET_VERSION: '2.2.110'
+  DOTNET_VERSION: '10.0'
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Verify commit exists in origin/main
-      run: |
-        git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
-        git branch --remote --contains | grep origin/main
-    - name: Set VERSION variable from tag
-      run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-    - name: Install dependencies
-      run: |
-        cd src
-        dotnet restore NetFramework.Task.Management
-    - name: Build
-      run: |
-        cd /home/runner/work/NetTaskManagement/NetTaskManagement/src/NetFramework.Task.Management/
-        dotnet build NetFramework.Tasks.Management.csproj --configuration Release /p:Version=${VERSION}
-        cd /home/runner/work/NetTaskManagement/NetTaskManagement/src/NetFramework.Task.Management.Abstractions/
-        dotnet build NetFramework.Tasks.Management.Abstractions.csproj --configuration Release /p:Version=${VERSION}
-    - name: Pack
-      run: | 
-        cd /home/runner/work/NetTaskManagement/NetTaskManagement/src/NetFramework.Task.Management/
-        dotnet pack NetFramework.Tasks.Management.csproj --configuration Release /p:Version=${VERSION} --no-build --output .
-        cd /home/runner/work/NetTaskManagement/NetTaskManagement/src/NetFramework.Task.Management.Abstractions/
-        dotnet pack NetFramework.Tasks.Management.Abstractions.csproj --configuration Release /p:Version=${VERSION} --no-build --output .
-    - name: Push NetFramework.Tasks.Management
-      run: | 
-        cd /home/runner/work/NetTaskManagement/NetTaskManagement/src/NetFramework.Task.Management/
-        dotnet nuget push NetFramework.Tasks.Management.${VERSION}.nupkg --source https://nuget.pkg.github.com/ryujose/index.json --api-key ${GITHUB_TOKEN}
-    - name: Push NetFramework.Tasks.Management.Abstractions
-      run: |
-        cd /home/runner/work/NetTaskManagement/NetTaskManagement/src/NetFramework.Task.Management.Abstractions/
-        dotnet nuget push NetFramework.Tasks.Management.Abstractions.${VERSION}.nupkg --source https://nuget.pkg.github.com/ryujose/index.json --api-key ${GITHUB_TOKEN}
-        
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify commit exists in origin/main
+        run: |
+          git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
+          git branch --remote --contains | grep origin/main
+
+      - name: Set VERSION variable from tag
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
+      - name: Setup .NET (all versions for multi-targeting)
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0
+            9.0
+            10.0
+
+      - name: Restore
+        run: dotnet restore src/NetFramework.Task.Management.sln
+
+      - name: Build
+        run: |
+          dotnet build src/NetFramework.Task.Management/NetFramework.Tasks.Management.csproj --configuration Release /p:Version=${VERSION} --no-restore
+          dotnet build src/NetFramework.Task.Management.Abstractions/NetFramework.Tasks.Management.Abstractions.csproj --configuration Release /p:Version=${VERSION} --no-restore
+
+      - name: Test
+        run: dotnet test src/NetFramework.Tasks.Management.xUnit.Tests/ --configuration Release --no-build --logger "console;verbosity=normal"
+
+      - name: Pack
+        run: |
+          dotnet pack src/NetFramework.Task.Management/NetFramework.Tasks.Management.csproj --configuration Release /p:Version=${VERSION} --no-build --output $GITHUB_WORKSPACE/packages
+          dotnet pack src/NetFramework.Task.Management.Abstractions/NetFramework.Tasks.Management.Abstractions.csproj --configuration Release /p:Version=${VERSION} --no-build --output $GITHUB_WORKSPACE/packages
+
+      - name: Push NetFramework.Tasks.Management
+        run: dotnet nuget push $GITHUB_WORKSPACE/packages/NetFramework.Tasks.Management.${VERSION}.nupkg --source https://nuget.pkg.github.com/ryujose/index.json --api-key ${GITHUB_TOKEN}
+
+      - name: Push NetFramework.Tasks.Management.Abstractions
+        run: dotnet nuget push $GITHUB_WORKSPACE/packages/NetFramework.Tasks.Management.Abstractions.${VERSION}.nupkg --source https://nuget.pkg.github.com/ryujose/index.json --api-key ${GITHUB_TOKEN}

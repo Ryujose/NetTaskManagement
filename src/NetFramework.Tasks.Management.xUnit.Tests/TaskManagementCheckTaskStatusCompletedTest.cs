@@ -6,12 +6,14 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NetFramework.Tasks.Management;
 using NetFramework.Tasks.Management.Abstractions.Enums;
+using System;
 using System.Threading;
 using Xunit;
 
 namespace NetFramework.Tasks.Management.Tests
 {
-    public class TaskManagementCheckTaskStatusCompletedTest 
+    [Collection("TaskManagement")]
+    public class TaskManagementCheckTaskStatusCompletedTest : IDisposable
     {
         TasksManagement _taskManagement;
 
@@ -19,6 +21,11 @@ namespace NetFramework.Tasks.Management.Tests
         {
             var logger = new Mock<ILogger>();
             _taskManagement = new TasksManagement(logger.Object);
+        }
+
+        public void Dispose()
+        {
+            _taskManagement.ClearConcurrentLists();
         }
 
         [Fact]

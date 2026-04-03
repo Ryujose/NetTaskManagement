@@ -14,7 +14,8 @@ using Xunit;
 
 namespace NetFramework.Tasks.Management.Tests
 {
-    public class TaskManagementCancelAllTasksTest 
+    [Collection("TaskManagement")]
+    public class TaskManagementCancelAllTasksTest
     {
         [Fact]
         public void CancellAllTasksAcceptedtaskManagementCancelAllTasks_AllTasksCancelPetitionAcceptedStatus()
