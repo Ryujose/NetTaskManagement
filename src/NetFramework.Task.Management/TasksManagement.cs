@@ -305,11 +305,8 @@ namespace NetFramework.Tasks.Management
                 return TaskManagementStatus.TaskNotFound;
             }
 
-            taskDataModel.Task.Dispose();
-            taskDataModel.CancellationTokenSource.Dispose();
-
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+            var taskId = taskDataModel.Task.Id;
+            var taskStatus = taskDataModel.Task.Status.ToString();
 
             if (!TasksDataModel.TryRemove(taskName, out taskDataModel))
             {
@@ -318,11 +315,18 @@ namespace NetFramework.Tasks.Management
                 return TaskManagementStatus.TaskNotFound;
             }
 
+            taskDataModel.Task.Dispose();
+            taskDataModel.CancellationTokenSource.Dispose();
+            taskDataModel = null;
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
             var taskDisposedDataModel = new TaskDisposedDataModel
             {
                 TaskName = taskName,
-                TaskId = taskDataModel.Task.Id,
-                TaskStatus = taskDataModel.Task.Status.ToString(),
+                TaskId = taskId,
+                TaskStatus = taskStatus,
                 IsDisposed = true
             };
 

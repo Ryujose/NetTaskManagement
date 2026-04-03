@@ -8,7 +8,11 @@ using NetFramework.Tasks.Management;
 using NetFramework.Tasks.Management.Abstractions.Enums;
 using NetFramework.Tasks.Management.Abstractions.Models;
 using System;
+using System.Collections.Concurrent;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace NetFramework.Tasks.Management.Tests
@@ -125,6 +129,43 @@ namespace NetFramework.Tasks.Management.Tests
             Assert.Equal(TaskManagementStatus.ObjectInfoNotDequeuedOrFound, taskManagementStatus);
 
             _taskManagement.ClearConcurrentLists();
+        }
+
+        [Fact]
+        public void DeleteTask_AfterCompletion_TaskDataModelCollectedDuringDelete()
+        {
+            const string simpleTaskName = "tasktest_gc";
+
+            var cancellationTokenSource = new CancellationTokenSource();
+            _taskManagement.RegisterTask(simpleTaskName, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), cancellationTokenSource);
+            _taskManagement.StartTask(simpleTaskName);
+            _taskManagement.CancelTask(simpleTaskName);
+            _taskManagement.CheckTaskStatusCompleted(simpleTaskName, retry: 1, millisecondsCancellationWait: 1000);
+
+            // Capture a weak reference to the internal TaskDataModel wrapper before deletion.
+            // TaskDataModel is our own class with no .NET runtime internal references,
+            // so it must be collectible as soon as all strong references are released.
+            // Uses NoInlining to ensure the JIT does not keep a strong reference on the stack.
+            var weakRef = GetWeakReferenceToInternalTaskDataModel(simpleTaskName);
+
+            // DeleteTask should: remove from dict, dispose, null the local ref, then run GC.
+            // TaskDataModel must be collected during this call — no external GC needed.
+            _taskManagement.DeleteTask(simpleTaskName);
+
+            Assert.False(weakRef.TryGetTarget(out _),
+                "TaskDataModel should have been collected during DeleteTask, but it is still alive. " +
+                "This means GC.Collect() ran before all references were released (wrong ordering).");
+
+            _taskManagement.ClearConcurrentLists();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static WeakReference<TaskDataModel> GetWeakReferenceToInternalTaskDataModel(string taskName)
+        {
+            var field = typeof(TasksManagement).GetField("TasksDataModel", BindingFlags.Static | BindingFlags.NonPublic);
+            var dict = (ConcurrentDictionary<string, TaskDataModel>)field.GetValue(null);
+            dict.TryGetValue(taskName, out var model);
+            return new WeakReference<TaskDataModel>(model, trackResurrection: false);
         }
     }
 }
