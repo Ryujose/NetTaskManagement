@@ -79,5 +79,31 @@ namespace NetFramework.Tasks.Management.Tests
 
             Assert.Equal(TaskManagementStatus.NotCompleted, taskManagementStatus);
         }
+
+        [Fact]
+        public void AlreadyCompletedTaskCheckTaskStatusCompleted_CompletedStatus()
+        {
+            const string simpleTaskName = "tasktest";
+
+            // Register a task with a trivially-completing action (no spin loop).
+            var cancellationTokenSource = new CancellationTokenSource();
+            TaskManagementStatus taskManagementStatus = _taskManagement.RegisterTask(simpleTaskName, _ => { }, cancellationTokenSource);
+            taskManagementStatus = _taskManagement.StartTask(simpleTaskName);
+
+            // Wait until the task has actually reached a completed state before calling
+            // CheckTaskStatusCompleted — this exercises the fast-path branch that returns
+            // immediately when Task.IsCompleted is true, skipping the Task.Run polling loop.
+            var spinWait = new SpinWait();
+            var statuses = _taskManagement.GetTasksStatus();
+            while (!statuses[simpleTaskName].Equals(System.Threading.Tasks.TaskStatus.RanToCompletion))
+            {
+                spinWait.SpinOnce();
+                statuses = _taskManagement.GetTasksStatus();
+            }
+
+            taskManagementStatus = _taskManagement.CheckTaskStatusCompleted(simpleTaskName, retry: 1, millisecondsCancellationWait: 1000);
+
+            Assert.Equal(TaskManagementStatus.Completed, taskManagementStatus);
+        }
     }
 }

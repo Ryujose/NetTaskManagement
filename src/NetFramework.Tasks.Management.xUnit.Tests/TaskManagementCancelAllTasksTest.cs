@@ -113,5 +113,64 @@ namespace NetFramework.Tasks.Management.Tests
             Assert.False(isCancelPetitionFailed);
             taskManagement.ClearConcurrentLists();
         }
+
+        [Fact]
+        public void AllTasksInExceptListCancelAllTasks_TasksNotFoundToBeCancelledStatus()
+        {
+            var logger = new Mock<ILogger>();
+            TasksManagement taskManagement = new TasksManagement(logger.Object);
+
+            const string simpleTaskName = "tasktest1";
+            const string simpleTaskNameTwo = "tasktest2";
+
+            var cancellationTokenSource = new CancellationTokenSource();
+            TaskManagementStatus taskManagementStatus = taskManagement.RegisterTask(simpleTaskName, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), cancellationTokenSource);
+
+            var cancellationTokenSource2 = new CancellationTokenSource();
+            taskManagementStatus = taskManagement.RegisterTask(simpleTaskNameTwo, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), cancellationTokenSource2);
+            taskManagementStatus = taskManagement.StartTask(simpleTaskName);
+            taskManagementStatus = taskManagement.StartTask(simpleTaskNameTwo);
+
+            // All registered tasks are in the except list — sequential path finds no eligible
+            // task to cancel and should return TasksNotFoundToBeCancelled.
+            var tasksCancelPetitionFailedRef = new ConcurrentDictionary<string, TaskManagementStatus>();
+            taskManagementStatus = taskManagement.CancelAllTasks(new List<string> { simpleTaskName, simpleTaskNameTwo }, ref tasksCancelPetitionFailedRef);
+
+            Assert.Equal(TaskManagementStatus.TasksNotFoundToBeCancelled, taskManagementStatus);
+            Assert.Empty(tasksCancelPetitionFailedRef);
+            taskManagement.ClearConcurrentLists();
+        }
+
+        [Fact]
+        public void AlreadyCompletedTaskCancelAllTasks_AllTasksCancelPetitionAcceptedStatus()
+        {
+            var logger = new Mock<ILogger>();
+            TasksManagement taskManagement = new TasksManagement(logger.Object);
+
+            const string simpleTaskName = "tasktest1";
+
+            // Register a task with a trivially-completing action so it finishes on its own.
+            var cancellationTokenSource = new CancellationTokenSource();
+            TaskManagementStatus taskManagementStatus = taskManagement.RegisterTask(simpleTaskName, _ => { }, cancellationTokenSource);
+            taskManagementStatus = taskManagement.StartTask(simpleTaskName);
+
+            // Wait until the task reaches RanToCompletion before calling CancelAllTasks —
+            // this exercises the IsCompleted branch in the sequential path, which records
+            // the task as Completed in the failure dict. The final check treats Completed
+            // entries as non-failures, so the method returns AllTasksCancelPetitionAccepted.
+            var spinWait = new SpinWait();
+            var statuses = taskManagement.GetTasksStatus();
+            while (!statuses[simpleTaskName].Equals(System.Threading.Tasks.TaskStatus.RanToCompletion))
+            {
+                spinWait.SpinOnce();
+                statuses = taskManagement.GetTasksStatus();
+            }
+
+            var tasksCancelPetitionFailedRef = new ConcurrentDictionary<string, TaskManagementStatus>();
+            taskManagementStatus = taskManagement.CancelAllTasks(null, ref tasksCancelPetitionFailedRef);
+
+            Assert.Equal(TaskManagementStatus.AllTasksCancelPetitionAccepted, taskManagementStatus);
+            taskManagement.ClearConcurrentLists();
+        }
     }
 }
