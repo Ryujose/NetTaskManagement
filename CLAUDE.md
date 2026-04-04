@@ -16,6 +16,10 @@ src/
 ├── NetFramework.Task.Management/               # Core implementation
 ├── NetFramework.Task.Management.Abstractions/  # ITaskManagement, enums, models
 └── NetFramework.Tasks.Management.xUnit.Tests/  # xUnit test suite
+examples/
+└── FinancialOrderProcessing/                   # Multi-threaded market order pipeline demo
+benchmarks/
+└── NetFramework.Tasks.Management.Benchmarks/   # BenchmarkDotNet suite (net8.0;net9.0;net10.0)
 ```
 
 ## Common Commands
@@ -27,15 +31,20 @@ dotnet restore src/NetFramework.Task.Management.sln
 # Build
 dotnet build src/NetFramework.Task.Management.sln --configuration Release
 
-# Test (all)
+# Test (all TFMs — do NOT pass --framework, all targets must pass)
 dotnet test src/NetFramework.Tasks.Management.xUnit.Tests/
 
-# Test (single filter, mirrors CircleCI jobs)
+# Test (single filter)
 dotnet test --filter "FullyQualifiedName~RegisterTaskTests"
 
 # Pack
 dotnet pack src/NetFramework.Task.Management/NetFramework.Tasks.Management.csproj --configuration Release
 dotnet pack src/NetFramework.Task.Management.Abstractions/NetFramework.Tasks.Management.Abstractions.csproj --configuration Release
+
+# Benchmarks (Release mode required — Debug produces meaningless results)
+dotnet run -c Release -f net8.0  --project benchmarks/NetFramework.Tasks.Management.Benchmarks/ -- --filter '*'
+dotnet run -c Release -f net9.0  --project benchmarks/NetFramework.Tasks.Management.Benchmarks/ -- --filter '*'
+dotnet run -c Release -f net10.0 --project benchmarks/NetFramework.Tasks.Management.Benchmarks/ -- --filter '*'
 ```
 
 ## Architecture
@@ -88,9 +97,12 @@ RegisterTask → StartTask → [running in TasksDataModel]
 
 ## CI/CD
 
-| System | Trigger | Purpose |
+| Workflow | Trigger | Purpose |
 |---|---|---|
-| GitHub Actions (`nugetpackage.yml`) | Push tag `v*.*.*` | Build, pack, publish both NuGet packages |
-| CircleCI (`config.yml`) | Push / PR | Run full xUnit test suite |
+| `nugetpackage.yml` | Push tag `v*.*.*` | Build, pack, publish both NuGet packages to GitHub Packages and nuget.org |
+| `ci.yml` | Push / PR | Run full xUnit test suite across all TFMs |
+| `benchmarks.yml` | Push to `main` / manual | Run BenchmarkDotNet on net8.0, net9.0, net10.0 and publish charts to GitHub Pages |
+
+Benchmark results are committed to `benchmarks/results/` on `main` and served via GitHub Pages at `https://ryujose.github.io/NetTaskManagement/benchmarks/results/`.
 
 **To release a new version:** bump the version in both `.csproj` files, commit, then push a tag: `git tag v1.2.3 && git push origin v1.2.3`
