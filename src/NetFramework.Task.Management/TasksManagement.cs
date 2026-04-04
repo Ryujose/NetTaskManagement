@@ -24,7 +24,9 @@ namespace NetFramework.Tasks.Management
         // Parallel.ForEach thread-pool setup costs ~50-80 µs regardless of N,
         // so sequential foreach is faster below this threshold.
         // Above 500 tasks the parallel fan-out amortises the setup cost.
-        private const int CancelAllTasksParallelThreshold = 500;
+        // internal (not private const) so the test assembly can lower it to exercise
+        // the parallel path without registering hundreds of real tasks.
+        internal static int CancelAllTasksParallelThreshold = 500;
 
         private readonly ILogger _logger;
         public TasksManagement(ILogger logger)

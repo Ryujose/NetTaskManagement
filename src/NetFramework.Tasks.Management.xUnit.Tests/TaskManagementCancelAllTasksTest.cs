@@ -142,6 +142,40 @@ namespace NetFramework.Tasks.Management.Tests
         }
 
         [Fact]
+        public void ParallelPathCancelAllTasks_AllTasksCancelPetitionAcceptedStatus()
+        {
+            var logger = new Mock<ILogger>();
+            TasksManagement taskManagement = new TasksManagement(logger.Object);
+
+            // Lower the threshold so 6 tasks trigger the Parallel.ForEach path without
+            // the cost of registering hundreds of real tasks. Restore in finally so a
+            // test failure cannot pollute subsequent tests in the collection.
+            int originalThreshold = TasksManagement.CancelAllTasksParallelThreshold;
+            try
+            {
+                TasksManagement.CancelAllTasksParallelThreshold = 5;
+
+                for (int i = 1; i <= 6; i++)
+                {
+                    var cts = new CancellationTokenSource();
+                    taskManagement.RegisterTask($"parallel-task-{i}", new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), cts);
+                    taskManagement.StartTask($"parallel-task-{i}");
+                }
+
+                var tasksCancelPetitionFailedRef = new ConcurrentDictionary<string, TaskManagementStatus>();
+                TaskManagementStatus taskManagementStatus = taskManagement.CancelAllTasks(null, ref tasksCancelPetitionFailedRef);
+
+                Assert.Equal(TaskManagementStatus.AllTasksCancelPetitionAccepted, taskManagementStatus);
+                Assert.Empty(tasksCancelPetitionFailedRef);
+            }
+            finally
+            {
+                TasksManagement.CancelAllTasksParallelThreshold = originalThreshold;
+                taskManagement.ClearConcurrentLists();
+            }
+        }
+
+        [Fact]
         public void AlreadyCompletedTaskCancelAllTasks_AllTasksCancelPetitionAcceptedStatus()
         {
             var logger = new Mock<ILogger>();
