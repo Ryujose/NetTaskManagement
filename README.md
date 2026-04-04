@@ -7,6 +7,25 @@ A .NET Standard 2.0 library for Task Parallel Library (TPL) orchestration with D
 
 Tasks are identified by **string key** and managed through a **status-based API** — no raw `Task` objects exposed to callers. The library handles the full task lifecycle: register → start → cancel → check completion → delete, and exposes an append-only observability queue that captures disposal metadata for external monitoring.
 
+## NetTaskManagement vs TPL Dataflow — which one do you need?
+
+These are complementary tools, not competing ones. The benchmarks below are meant to help you choose.
+
+| | **NetTaskManagement** | **TPL Dataflow** |
+|---|---|---|
+| Task identity | Named string key — look up, cancel, or delete any task by name at any time | Anonymous — items are messages, no individual handles |
+| Lifecycle control | Explicit Register → Start → Cancel → CheckCompleted → Delete with status at every step | Complete the block and await `Completion`; no per-item lifecycle |
+| DI integration | `AddTaskManagement()` registers `ITaskManagement` as a scoped service | Manual construction |
+| Cancellation granularity | Per-task: cancel one, a filtered subset, or all — with per-task failure reporting | Shared token: cancel the whole block at once |
+| Throughput focus | Long-running named workers (background jobs, daemons, named pipelines) | High-volume anonymous item streams (fan-out, fan-in, transform chains) |
+| Observability | Built-in disposal queue — capture task name, id, and final status when a task is removed | No built-in disposal queue |
+| Memory reclaim | `DeleteTask` forces `GC.Collect` after disposal — guarantees memory is freed | GC-managed by the runtime |
+
+**Choose NetTaskManagement when** your tasks have identity, need individual control, and live for seconds to hours.<br>
+**Choose TPL Dataflow when** you are processing a high-volume stream of anonymous items through a pipeline graph.
+
+**[View live benchmark charts — NTM vs Dataflow](https://ryujose.github.io/NetTaskManagement/benchmarks/results)**
+
 ## Packages
 
 | Package | NuGet |
@@ -111,14 +130,22 @@ Performance is tracked automatically on every push to `main` and published as in
 
 **[View benchmark charts](https://ryujose.github.io/NetTaskManagement/benchmarks/results)**
 
-Benchmarks cover:
-- `LifecycleBenchmarks` — individual lifecycle stages: Register, Start, Cancel, Delete, and full end-to-end
-- `GetTasksStatusBenchmarks` — dictionary snapshot cost at 1, 10, and 50 tasks
-- `CancelAllTasksBenchmarks` — `Parallel.ForEach` cancellation fan-out at 1, 10, and 50 tasks
+| Benchmark class | What it measures |
+|---|---|
+| `LifecycleBenchmarks` | Each lifecycle stage in isolation: Register, Start, Cancel, Delete, and full end-to-end |
+| `GetTasksStatusBenchmarks` | Dictionary snapshot cost at 1, 10, and 50 tasks |
+| `CancelAllTasksBenchmarks` | `Parallel.ForEach` cancellation fan-out at 1, 10, and 50 tasks |
+| `DataflowComparisonBenchmarks` | Head-to-head vs TPL Dataflow: start N workers, cancel N workers, process N items — at N = 10, 50, 100 |
 
 All benchmarks run on **net8.0**, **net9.0**, and **net10.0** with `[MemoryDiagnoser]` enabled (reports allocated bytes per operation).
 
-To run locally (Release mode required):
+To run the comparison benchmarks locally (Release mode required):
+
+```bash
+dotnet run -c Release -f net9.0 --project benchmarks/NetFramework.Tasks.Management.Benchmarks/ -- --filter '*DataflowComparison*'
+```
+
+To run everything:
 
 ```bash
 dotnet run -c Release -f net8.0 --project benchmarks/NetFramework.Tasks.Management.Benchmarks/ -- --filter '*'

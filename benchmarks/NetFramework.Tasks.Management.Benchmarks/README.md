@@ -32,6 +32,22 @@ Measures the `Parallel.ForEach` fan-out inside `CancelAllTasks` as the number of
 |---|---|
 | `TaskCount` | 1, 10, 50 |
 
+### `DataflowComparisonBenchmarks`
+
+Head-to-head comparison of NetTaskManagement vs TPL Dataflow for the scenarios where both libraries can solve the same problem. The goal is to help developers choose the right tool, not declare a winner — each library has distinct strengths.
+
+| Benchmark pair | What is measured |
+|---|---|
+| `NTM_StartNWorkers` / `Dataflow_StartNWorkers` | Cost of getting N concurrent workers running. NTM: `RegisterTask × N` + `StartTask × N` (ConcurrentDictionary inserts + `Task.Start`). Dataflow: `new ActionBlock` + `Post × N`. |
+| `NTM_CancelNWorkers` / `Dataflow_CancelNWorkers` | Cancel N running workers. NTM: `CancelAllTasks()` uses `Parallel.ForEach` and returns per-task status. Dataflow: single `CancellationTokenSource.Cancel()` shared across all workers. |
+| `NTM_ProcessNItems` / `Dataflow_ProcessNItems` | Process N short-lived items end-to-end. NTM: `StartTask × N` → `CheckTaskStatusCompleted × N` → `DeleteTask × N` (includes `GC.Collect` per delete). Dataflow: `Post × N` → `Complete` → `Wait`. |
+
+`[InvocationCount(1)]` applies to all pairs because every method mutates shared state. A `Thread.Sleep(50)` in the cancellation setup ensures workers are actively spinning before the timed cancellation call — without it, some items may not have been dequeued yet and would understate the true cancellation cost.
+
+| Parameter | Values |
+|---|---|
+| `N` | 10, 50, 100 |
+
 ## Running
 
 > Benchmarks must be run in **Release** configuration. Debug builds produce meaningless results.
@@ -55,6 +71,7 @@ dotnet run -c Release -f net10.0 --project benchmarks/NetFramework.Tasks.Managem
 dotnet run -c Release -f net8.0 --project benchmarks/NetFramework.Tasks.Management.Benchmarks/ -- --filter *Lifecycle*
 dotnet run -c Release -f net8.0 --project benchmarks/NetFramework.Tasks.Management.Benchmarks/ -- --filter *GetTasksStatus*
 dotnet run -c Release -f net8.0 --project benchmarks/NetFramework.Tasks.Management.Benchmarks/ -- --filter *CancelAll*
+dotnet run -c Release -f net8.0 --project benchmarks/NetFramework.Tasks.Management.Benchmarks/ -- --filter *DataflowComparison*
 ```
 
 ### All benchmarks
@@ -80,7 +97,8 @@ BenchmarkDotNet.Artifacts/
 └── results/
     ├── NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks-report.md
     ├── NetFramework.Tasks.Management.Benchmarks.GetTasksStatusBenchmarks-report.md
-    └── NetFramework.Tasks.Management.Benchmarks.CancelAllTasksBenchmarks-report.md
+    ├── NetFramework.Tasks.Management.Benchmarks.CancelAllTasksBenchmarks-report.md
+    └── NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks-report.md
 ```
 
 `[MemoryDiagnoser]` is enabled on all classes so each report includes **allocated bytes per operation** in addition to execution time.

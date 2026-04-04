@@ -30,4 +30,10 @@
     <ProjectReference Include="..\NetFramework.Task.Management.Abstractions\NetFramework.Tasks.Management.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>NetFramework.Tasks.Management.xUnit.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
 </Project>
