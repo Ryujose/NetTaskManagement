@@ -289,7 +289,7 @@ namespace NetFramework.Tasks.Management
             return TaskManagementStatus.Completed;
         }
 
-        public TaskManagementStatus DeleteTask(string taskName, bool sendDataToInternalQueue = false)
+        public TaskManagementStatus DeleteTask(string taskName, bool sendDisposedDataToInternalQueue = false)
         {
             if (string.IsNullOrEmpty(taskName))
             {
@@ -330,7 +330,7 @@ namespace NetFramework.Tasks.Management
                 IsDisposed = true
             };
 
-            if (sendDataToInternalQueue)
+            if (sendDisposedDataToInternalQueue)
                 TaskDisposedDataModel.Enqueue(taskDisposedDataModel);
 
             _logger.LogInformation($"{nameof(taskName)}-{nameof(taskName)} {nameof(TaskManagementStatus.Deleted)} successfully");

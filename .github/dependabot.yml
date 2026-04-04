@@ -1,0 +1,29 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+
+  - package-ecosystem: nuget
+    directory: /src
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+
+  - package-ecosystem: nuget
+    directory: /benchmarks/NetFramework.Tasks.Management.Benchmarks
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+
+  - package-ecosystem: nuget
+    directory: /examples/FinancialOrderProcessing
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies

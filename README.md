@@ -1,5 +1,8 @@
 # NetTaskManagement
 
+[![CI](https://github.com/Ryujose/NetTaskManagement/actions/workflows/ci.yml/badge.svg)](https://github.com/Ryujose/NetTaskManagement/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/Ryujose/NetTaskManagement/branch/main/graph/badge.svg)](https://codecov.io/gh/Ryujose/NetTaskManagement)
+
 A .NET Standard 2.0 library for Task Parallel Library (TPL) orchestration with Dependency Injection support.
 
 Tasks are identified by **string key** and managed through a **status-based API** — no raw `Task` objects exposed to callers. The library handles the full task lifecycle: register → start → cancel → check completion → delete, and exposes an append-only observability queue that captures disposal metadata for external monitoring.
