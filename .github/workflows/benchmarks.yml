@@ -1,0 +1,79 @@
+name: Benchmarks
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  benchmark:
+    name: Run BenchmarkDotNet and publish charts
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.x
+            9.x
+
+      - name: Restore
+        run: dotnet restore benchmarks/NetFramework.Tasks.Management.Benchmarks/NetFramework.Tasks.Management.Benchmarks.csproj
+
+      - name: Run benchmarks (net8.0)
+        run: |
+          dotnet run -c Release -f net8.0 \
+            --project benchmarks/NetFramework.Tasks.Management.Benchmarks/ \
+            -- --filter '*' \
+               --exporters Json \
+               --iterationCount 5 \
+               --warmupCount 3 \
+               --artifacts /tmp/bdn-net8
+
+      - name: Run benchmarks (net9.0)
+        run: |
+          dotnet run -c Release -f net9.0 \
+            --project benchmarks/NetFramework.Tasks.Management.Benchmarks/ \
+            -- --filter '*' \
+               --exporters Json \
+               --iterationCount 5 \
+               --warmupCount 3 \
+               --artifacts /tmp/bdn-net9
+
+      - name: Merge JSON results
+        run: |
+          # Collect all BenchmarkDotNet JSON result files from both runs
+          JSON_FILES=$(find /tmp/bdn-net8/results /tmp/bdn-net9/results -name '*.json' 2>/dev/null | tr '\n' ' ')
+          echo "Found JSON files: $JSON_FILES"
+
+          # BenchmarkDotNet JSON format: { "Title": "...", "Benchmarks": [...] }
+          # Merge all into a single array under "Benchmarks"
+          jq -s '
+            {
+              Title: "NetFramework.Tasks.Management Benchmarks",
+              Benchmarks: (map(.Benchmarks) | add)
+            }
+          ' $JSON_FILES > /tmp/bdn-merged.json
+
+          echo "Merged benchmark count: $(jq '.Benchmarks | length' /tmp/bdn-merged.json)"
+
+      - name: Store benchmark results
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: benchmarkdotnet
+          output-file-path: /tmp/bdn-merged.json
+          gh-pages-branch: gh-pages
+          benchmark-data-dir-path: dev/bench
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+          comment-on-alert: true
+          alert-threshold: '150%'
+          fail-on-alert: false
