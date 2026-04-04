@@ -81,7 +81,7 @@ jobs:
         with:
           tool: benchmarkdotnet
           output-file-path: /tmp/bdn-merged.json
-          gh-pages-branch: main
+          gh-pages-branch: gh-pages
           benchmark-data-dir-path: benchmarks/results
           github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: true

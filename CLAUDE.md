@@ -103,6 +103,6 @@ RegisterTask → StartTask → [running in TasksDataModel]
 | `ci.yml` | Push / PR | Run full xUnit test suite across all TFMs |
 | `benchmarks.yml` | Push to `main` / manual | Run BenchmarkDotNet on net8.0, net9.0, net10.0 and publish charts to GitHub Pages |
 
-Benchmark results are committed to `benchmarks/results/` on `main` and served via GitHub Pages at `https://ryujose.github.io/NetTaskManagement/benchmarks/results/`.
+Benchmark results are committed to `benchmarks/results/` on the `gh-pages` branch (managed automatically by the action) and served via GitHub Pages at `https://ryujose.github.io/NetTaskManagement/benchmarks/results`.
 
 **To release a new version:** bump the version in both `.csproj` files, commit, then push a tag: `git tag v1.2.3 && git push origin v1.2.3`
