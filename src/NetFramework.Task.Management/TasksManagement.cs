@@ -20,6 +20,12 @@ namespace NetFramework.Tasks.Management
         private static ConcurrentDictionary<string, TaskDataModel> TasksDataModel = new ConcurrentDictionary<string, TaskDataModel>();
         private static ConcurrentQueue<TaskDisposedDataModel> TaskDisposedDataModel = new ConcurrentQueue<TaskDisposedDataModel>();
 
+        // CancellationTokenSource.Cancel() is an atomic flag-set (~100 ns).
+        // Parallel.ForEach thread-pool setup costs ~50-80 µs regardless of N,
+        // so sequential foreach is faster below this threshold.
+        // Above 500 tasks the parallel fan-out amortises the setup cost.
+        private const int CancelAllTasksParallelThreshold = 500;
+
         private readonly ILogger _logger;
         public TasksManagement(ILogger logger)
         {
@@ -204,6 +210,15 @@ namespace NetFramework.Tasks.Management
                 return TaskManagementStatus.TaskNotFound;
             }
 
+            // Fast path: task already completed — skip Task.Run allocation and polling loop.
+            // Task.IsCompleted is thread-safe and terminal: once true it never goes false.
+            if (taskDataModel.Task.IsCompleted)
+            {
+                _logger.LogInformation($"{nameof(taskName)}-{taskName} {nameof(TaskManagementStatus.Completed)}");
+
+                return TaskManagementStatus.Completed;
+            }
+
             var cancellationTokenSource = new CancellationTokenSource(millisecondsCancellationWait);
 
             int retryCount = 0;
@@ -352,18 +367,11 @@ namespace NetFramework.Tasks.Management
             return TaskManagementStatus.ObjectInfoDequeued;
         }
 
-        public TaskManagementStatus CancelAllTasks (IList<string> except, ref ConcurrentDictionary<string, TaskManagementStatus> tasksCancelPetitionFailedRef)
+        public TaskManagementStatus CancelAllTasks(IList<string> except, ref ConcurrentDictionary<string, TaskManagementStatus> tasksCancelPetitionFailedRef)
         {
             try
             {
-                IEnumerable<KeyValuePair<string, TaskDataModel>> tasksData = null;
-
-                if (except != null)
-                    tasksData = TasksDataModel.Where(a => !except.Any(b => a.Key == b)).Select(c => c);
-                else
-                    tasksData = TasksDataModel.Select(c => c);
-
-                if (!tasksData.Any())
+                if (TasksDataModel.IsEmpty)
                 {
                     _logger.LogWarning($"{nameof(TaskManagementStatus.TasksNotFoundToBeCancelled)}");
 
@@ -372,26 +380,83 @@ namespace NetFramework.Tasks.Management
 
                 var tasksNotCancelled = new ConcurrentDictionary<string, TaskManagementStatus>();
 
-                Parallel.ForEach(tasksData, (taskData) =>
+                // Below the threshold, Parallel.ForEach thread-pool setup (~50-80 µs) costs
+                // more than calling Cancel() sequentially — Cancel() is an atomic flag-set (~100 ns).
+                // Above the threshold, parallel fan-out amortises the setup cost across many tasks.
+                if (TasksDataModel.Count <= CancelAllTasksParallelThreshold)
                 {
-                    if (taskData.Value.CancellationTokenSource == null)
-                    {
-                        if (!tasksNotCancelled.TryAdd(taskData.Key, TaskManagementStatus.CancellationTokenSourceNotFound))
-                            _logger.LogWarning($"{nameof(CancelAllTasks)}-{nameof(taskData.Key)} doesn't have a cancellation token source");
+                    bool anyTaskFound = false;
 
-                        return;
+                    foreach (var taskData in TasksDataModel)
+                    {
+                        if (except != null && except.Contains(taskData.Key))
+                            continue;
+
+                        anyTaskFound = true;
+
+                        if (taskData.Value.CancellationTokenSource == null)
+                        {
+                            if (!tasksNotCancelled.TryAdd(taskData.Key, TaskManagementStatus.CancellationTokenSourceNotFound))
+                                _logger.LogWarning($"{nameof(CancelAllTasks)}-{taskData.Key} doesn't have a cancellation token source");
+
+                            continue;
+                        }
+
+                        if (taskData.Value.Task.IsCompleted)
+                        {
+                            if (!tasksNotCancelled.TryAdd(taskData.Key, TaskManagementStatus.Completed))
+                                _logger.LogWarning($"{nameof(CancelAllTasks)}-{taskData.Key} task already completed");
+
+                            continue;
+                        }
+
+                        taskData.Value.CancellationTokenSource.Cancel();
                     }
 
-                    if (taskData.Value.Task.IsCompleted)
+                    if (!anyTaskFound)
                     {
-                        if (!tasksNotCancelled.TryAdd(taskData.Key, TaskManagementStatus.Completed))
-                            _logger.LogWarning($"{nameof(CancelAllTasks)}-{nameof(taskData.Key)} task already completed");
+                        _logger.LogWarning($"{nameof(TaskManagementStatus.TasksNotFoundToBeCancelled)}");
 
-                        return;
+                        return TaskManagementStatus.TasksNotFoundToBeCancelled;
                     }
+                }
+                else
+                {
+                    int anyTaskFound = 0;
 
-                    taskData.Value.CancellationTokenSource.Cancel();
-                });
+                    Parallel.ForEach(TasksDataModel, (taskData) =>
+                    {
+                        if (except != null && except.Contains(taskData.Key))
+                            return;
+
+                        Interlocked.Exchange(ref anyTaskFound, 1);
+
+                        if (taskData.Value.CancellationTokenSource == null)
+                        {
+                            if (!tasksNotCancelled.TryAdd(taskData.Key, TaskManagementStatus.CancellationTokenSourceNotFound))
+                                _logger.LogWarning($"{nameof(CancelAllTasks)}-{taskData.Key} doesn't have a cancellation token source");
+
+                            return;
+                        }
+
+                        if (taskData.Value.Task.IsCompleted)
+                        {
+                            if (!tasksNotCancelled.TryAdd(taskData.Key, TaskManagementStatus.Completed))
+                                _logger.LogWarning($"{nameof(CancelAllTasks)}-{taskData.Key} task already completed");
+
+                            return;
+                        }
+
+                        taskData.Value.CancellationTokenSource.Cancel();
+                    });
+
+                    if (anyTaskFound == 0)
+                    {
+                        _logger.LogWarning($"{nameof(TaskManagementStatus.TasksNotFoundToBeCancelled)}");
+
+                        return TaskManagementStatus.TasksNotFoundToBeCancelled;
+                    }
+                }
 
                 tasksCancelPetitionFailedRef = tasksNotCancelled;
 
