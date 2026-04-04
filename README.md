@@ -102,6 +102,12 @@ if (_tasks.DequeueTaskDisposedDataModel(out var record) == TaskManagementStatus.
 }
 ```
 
+## Examples
+
+| Example | Description |
+|---|---|
+| [Financial Order Processing](examples/FinancialOrderProcessing/README.md) | Multi-threaded market order pipeline — producer, 5 trading desk workers, live monitor, graceful shutdown, and observability queue drain |
+
 ## License
 
 MIT © Jose Luis Guerra Infante
