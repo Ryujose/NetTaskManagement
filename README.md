@@ -106,7 +106,7 @@ if (_tasks.DequeueTaskDisposedDataModel(out var record) == TaskManagementStatus.
 
 Performance is tracked automatically on every push to `main` and published as interactive charts:
 
-**[View benchmark charts](https://ryujose.github.io/NetTaskManagement/benchmarks/results/)**
+**[View benchmark charts](https://ryujose.github.io/NetTaskManagement/benchmarks/results)**
 
 Benchmarks cover:
 - `LifecycleBenchmarks` — individual lifecycle stages: Register, Start, Cancel, Delete, and full end-to-end
