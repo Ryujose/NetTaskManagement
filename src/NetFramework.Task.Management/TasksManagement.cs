@@ -240,7 +240,7 @@ namespace NetFramework.Tasks.Management
                                 break;
                             }
 
-                            _logger.LogDebug($"{nameof(taskName)}-{taskName} while {nameof(cancellationTokenSource.IsCancellationRequested)} checking if it´s already completed");
+                            _logger.LogDebug("{TaskName} while {Property} checking if it´s already completed", taskName, nameof(cancellationTokenSource.IsCancellationRequested));
                         }
                     }, cancellationTokenSource.Token);
 
