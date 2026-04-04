@@ -17,11 +17,14 @@ These are complementary tools, not competing ones. The benchmarks below are mean
 | Lifecycle control | Explicit Register → Start → Cancel → CheckCompleted → Delete with status at every step | Complete the block and await `Completion`; no per-item lifecycle |
 | DI integration | `AddTaskManagement()` registers `ITaskManagement` as a scoped service | Manual construction |
 | Cancellation granularity | Per-task: cancel one, a filtered subset, or all — with per-task failure reporting | Shared token: cancel the whole block at once |
+| Threading model | `LongRunning`: dedicated OS thread per task — all N workers start simultaneously, no pool pressure. `None` (default): thread-pool thread, lower startup cost | Thread-pool threads — pool injection heuristic limits how many workers can start at once |
+| Blocking-work throughput | With `LongRunning`: **~3× faster than Dataflow at N=100** for blocking tasks — all threads start and block in parallel, no injection delay | Pool injection batches workers when N > min-threads; total time scales with N / pool-size |
 | Throughput focus | Long-running named workers (background jobs, daemons, named pipelines) | High-volume anonymous item streams (fan-out, fan-in, transform chains) |
 | Observability | Built-in disposal queue — capture task name, id, and final status when a task is removed | No built-in disposal queue |
 | Memory reclaim | `DeleteTask` forces `GC.Collect` after disposal — guarantees memory is freed | GC-managed by the runtime |
 
-**Choose NetTaskManagement when** your tasks have identity, need individual control, and live for seconds to hours.<br>
+**Choose NetTaskManagement (`LongRunning`) when** your workers block (I/O, sleep, external calls) and N exceeds the thread-pool minimum — all workers start simultaneously with no injection delay.<br>
+**Choose NetTaskManagement (`None`) when** tasks are short-lived and pool availability is not a concern — lower startup cost with named handles and per-task lifecycle control.<br>
 **Choose TPL Dataflow when** you are processing a high-volume stream of anonymous items through a pipeline graph.
 
 **[View live benchmark charts — NTM vs Dataflow](https://ryujose.github.io/NetTaskManagement/benchmarks/results)**
@@ -135,7 +138,7 @@ Performance is tracked automatically on every push to `main` and published as in
 | `LifecycleBenchmarks` | Each lifecycle stage in isolation: Register, Start, Cancel, Delete, and full end-to-end |
 | `GetTasksStatusBenchmarks` | Dictionary snapshot cost at 1, 10, and 50 tasks |
 | `CancelAllTasksBenchmarks` | `Parallel.ForEach` cancellation fan-out at 1, 10, and 50 tasks |
-| `DataflowComparisonBenchmarks` | Head-to-head vs TPL Dataflow: start N workers, cancel N workers, process N items — at N = 10, 50, 100 |
+| `DataflowComparisonBenchmarks` | Head-to-head vs TPL Dataflow across four scenarios at N = 10, 50, 100: start N workers, cancel N workers, process N short-lived items, and parallel blocking-work throughput. Each NTM scenario has two variants — `_LongRunning` (dedicated OS thread) and `_Pool` (thread-pool thread) — so you can pick the right threading model for your use case |
 
 All benchmarks run on **net8.0**, **net9.0**, and **net10.0** with `[MemoryDiagnoser]` enabled (reports allocated bytes per operation).
 
