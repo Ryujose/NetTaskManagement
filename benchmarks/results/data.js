@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1775268785199,
+  "lastUpdate": 1775268808106,
   "repoUrl": "https://github.com/Ryujose/NetTaskManagement",
   "entries": {
     "Benchmark": [
@@ -664,6 +664,228 @@ window.BENCHMARK_DATA = {
             "value": 1381.3637409210205,
             "unit": "ns",
             "range": "± 4.9598791887219145"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "4efa7643ab81decbdf16bd49acdc31422977cda4",
+          "message": "Bump actions/setup-dotnet from 4 to 5 (#24)\n\nBumps [actions/setup-dotnet](https://github.com/actions/setup-dotnet) from 4 to 5.\n- [Release notes](https://github.com/actions/setup-dotnet/releases)\n- [Commits](https://github.com/actions/setup-dotnet/compare/v4...v5)\n\n---\nupdated-dependencies:\n- dependency-name: actions/setup-dotnet\n  dependency-version: '5'\n  dependency-type: direct:production\n  update-type: version-update:semver-major\n...\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-04-04T04:10:37+02:00",
+          "tree_id": "7058a56c96412c5f058800348180a4118c6151fe",
+          "url": "https://github.com/Ryujose/NetTaskManagement/commit/4efa7643ab81decbdf16bd49acdc31422977cda4"
+        },
+        "date": 1775268807760,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.CancelAllTasksBenchmarks.CancelAllTasks(TaskCount: 1)",
+            "value": 57458.5,
+            "unit": "ns",
+            "range": "± 15220.822119714821"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.CancelAllTasksBenchmarks.CancelAllTasks(TaskCount: 10)",
+            "value": 168786.1,
+            "unit": "ns",
+            "range": "± 126429.22199910905"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.CancelAllTasksBenchmarks.CancelAllTasks(TaskCount: 50)",
+            "value": 188045.7,
+            "unit": "ns",
+            "range": "± 81697.25119733221"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.RegisterTask",
+            "value": 5932.2,
+            "unit": "ns",
+            "range": "± 368.26444302973374"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.StartTask",
+            "value": 11336.75,
+            "unit": "ns",
+            "range": "± 515.5717699796993"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.CancelTask",
+            "value": 17106,
+            "unit": "ns",
+            "range": "± 9285.339439137377"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.DeleteTask",
+            "value": 262840.8,
+            "unit": "ns",
+            "range": "± 28668.759891212594"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.FullLifecycle",
+            "value": 281268.8,
+            "unit": "ns",
+            "range": "± 15367.283777558088"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.GetTasksStatusBenchmarks.GetTasksStatus(TaskCount: 1)",
+            "value": 228.68481101989747,
+            "unit": "ns",
+            "range": "± 1.963076769445143"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.GetTasksStatusBenchmarks.GetTasksStatus(TaskCount: 10)",
+            "value": 417.92208070755004,
+            "unit": "ns",
+            "range": "± 2.4316873024334393"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.GetTasksStatusBenchmarks.GetTasksStatus(TaskCount: 50)",
+            "value": 1911.0504070281982,
+            "unit": "ns",
+            "range": "± 12.766448949148437"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.CancelAllTasksBenchmarks.CancelAllTasks(TaskCount: 1)",
+            "value": 36348,
+            "unit": "ns",
+            "range": "± 12620.941308000763"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.CancelAllTasksBenchmarks.CancelAllTasks(TaskCount: 10)",
+            "value": 62895.25,
+            "unit": "ns",
+            "range": "± 15556.388106391107"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.CancelAllTasksBenchmarks.CancelAllTasks(TaskCount: 50)",
+            "value": 107645.5,
+            "unit": "ns",
+            "range": "± 34656.89095980769"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.RegisterTask",
+            "value": 5370,
+            "unit": "ns",
+            "range": "± 123.38962679253066"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.StartTask",
+            "value": 4522,
+            "unit": "ns",
+            "range": "± 244.41903908383787"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.CancelTask",
+            "value": 4615.5,
+            "unit": "ns",
+            "range": "± 731.0444582923805"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.DeleteTask",
+            "value": 237962.1,
+            "unit": "ns",
+            "range": "± 12205.230509908448"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.FullLifecycle",
+            "value": 267202.8,
+            "unit": "ns",
+            "range": "± 21539.964640175247"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.GetTasksStatusBenchmarks.GetTasksStatus(TaskCount: 1)",
+            "value": 236.80119833946227,
+            "unit": "ns",
+            "range": "± 0.6211568255084243"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.GetTasksStatusBenchmarks.GetTasksStatus(TaskCount: 10)",
+            "value": 398.33303594589233,
+            "unit": "ns",
+            "range": "± 0.24970433926511884"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.GetTasksStatusBenchmarks.GetTasksStatus(TaskCount: 50)",
+            "value": 1959.3357460021973,
+            "unit": "ns",
+            "range": "± 14.66804917902482"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.CancelAllTasksBenchmarks.CancelAllTasks(TaskCount: 1)",
+            "value": 36577.9,
+            "unit": "ns",
+            "range": "± 10399.835445813555"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.CancelAllTasksBenchmarks.CancelAllTasks(TaskCount: 10)",
+            "value": 60916.5,
+            "unit": "ns",
+            "range": "± 27047.60851720536"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.CancelAllTasksBenchmarks.CancelAllTasks(TaskCount: 50)",
+            "value": 52121,
+            "unit": "ns",
+            "range": "± 1386.1420081170136"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.RegisterTask",
+            "value": 5380.25,
+            "unit": "ns",
+            "range": "± 59.55599605973077"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.StartTask",
+            "value": 5486,
+            "unit": "ns",
+            "range": "± 449.0827689116265"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.CancelTask",
+            "value": 4637.4,
+            "unit": "ns",
+            "range": "± 347.64248877258945"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.DeleteTask",
+            "value": 242476.6,
+            "unit": "ns",
+            "range": "± 14804.612163106469"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.FullLifecycle",
+            "value": 297307.3,
+            "unit": "ns",
+            "range": "± 42053.29811917253"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.GetTasksStatusBenchmarks.GetTasksStatus(TaskCount: 1)",
+            "value": 178.96200001239777,
+            "unit": "ns",
+            "range": "± 0.3684112471922305"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.GetTasksStatusBenchmarks.GetTasksStatus(TaskCount: 10)",
+            "value": 312.41389858722687,
+            "unit": "ns",
+            "range": "± 1.5332337019696847"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.GetTasksStatusBenchmarks.GetTasksStatus(TaskCount: 50)",
+            "value": 1372.7234191894531,
+            "unit": "ns",
+            "range": "± 11.376789235489522"
           }
         ]
       }
