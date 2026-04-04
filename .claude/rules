@@ -25,10 +25,27 @@ Both library projects (`NetFramework.Task.Management` and `NetFramework.Task.Man
 Callers identify and interact with tasks using string keys only. Do not expose raw `Task`, `CancellationToken`, or `CancellationTokenSource` objects through the public API. TPL implementation details stay inside the service.
 
 ## Test Isolation
-Each xUnit test class must mock `ILogger` using `Moq` and must not share mutable state with other test classes. Do not use real loggers, static state, or `Thread.Sleep` in tests — use the cancellation/status APIs provided by the library.
+All xUnit test classes must carry `[Collection("TaskManagement")]` so xUnit serializes their execution — the shared static `ConcurrentDictionary` cannot survive concurrent test class runs. Any class that holds a `_taskManagement` field must also implement `IDisposable` and call `_taskManagement.ClearConcurrentLists()` in `Dispose()` so cleanup is guaranteed even when an assertion fails. Mock `ILogger` with `Moq`. Do not use `Thread.Sleep` in tests — use the cancellation/status APIs provided by the library.
 
 ## Testing GC Collection — Use WeakReference&lt;TaskDataModel&gt;, Not WeakReference&lt;Task&gt;
 When writing tests that assert memory is freed during `DeleteTask()`, track `TaskDataModel` via `WeakReference<TaskDataModel>`, not `WeakReference<Task>`. The .NET runtime holds internal references to `Task` objects (scheduler, thread pool) that prevent them from being collected even after all user references are released. `TaskDataModel` is our own class with no runtime-internal references and is reliably collectible. Always obtain the `WeakReference` in a separate `[MethodImpl(MethodImplOptions.NoInlining)]` helper method to prevent the JIT from keeping a strong reference on the calling stack.
+
+## DI Registration — ILogger (non-generic)
+`AddTaskManagement()` resolves `ILogger` (non-generic) from the container, not `ILogger<T>`. The standard `AddLogging()` extension only registers `ILogger<T>`. When wiring up DI manually (e.g. in examples or tests), always register a plain `ILogger` singleton explicitly:
+```csharp
+services.AddSingleton<ILogger>(sp =>
+    sp.GetRequiredService<ILoggerFactory>().CreateLogger("NetFramework.Tasks.Management"));
+```
+
+## DeleteTask — Parameter Name Mismatch
+The `ITaskManagement` interface declares the second parameter as `sendDisposedDataToInternalQueue`, but the `TasksManagement` implementation uses `sendDataToInternalQueue`. Always use the implementation's name when calling via the concrete type (e.g. in benchmarks). When calling through the interface, use the interface name.
+
+## Benchmarks
+BenchmarkDotNet benchmarks live in `benchmarks/NetFramework.Tasks.Management.Benchmarks/` and target `net8.0;net9.0;net10.0`. Rules:
+- Use `[InvocationCount(1)]` on any benchmark class whose methods mutate the shared static `ConcurrentDictionary` — each iteration must start from a clean slate.
+- Use `[IterationSetup(Targets = ...)]` / `[IterationCleanup(Targets = ...)]` to drive tasks to the required state per individual benchmark method, not a blanket `[GlobalSetup]`.
+- Read-only operations (e.g. `GetTasksStatus`) do not need `[InvocationCount(1)]` — multiple invocations per iteration are safe.
+- Always run benchmarks in **Release** configuration. Debug builds produce meaningless results.
 
 ## Naming Conventions
 - Task wrapper model: `TaskDataModel`
