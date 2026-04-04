@@ -106,14 +106,14 @@ if (_tasks.DequeueTaskDisposedDataModel(out var record) == TaskManagementStatus.
 
 Performance is tracked automatically on every push to `main` and published as interactive charts:
 
-**[View benchmark charts](https://ryujose.github.io/NetTaskManagement/dev/bench/)**
+**[View benchmark charts](https://ryujose.github.io/NetTaskManagement/benchmarks/results/)**
 
 Benchmarks cover:
 - `LifecycleBenchmarks` — individual lifecycle stages: Register, Start, Cancel, Delete, and full end-to-end
 - `GetTasksStatusBenchmarks` — dictionary snapshot cost at 1, 10, and 50 tasks
 - `CancelAllTasksBenchmarks` — `Parallel.ForEach` cancellation fan-out at 1, 10, and 50 tasks
 
-All benchmarks run on **net8.0** and **net9.0** with `[MemoryDiagnoser]` enabled (reports allocated bytes per operation).
+All benchmarks run on **net8.0**, **net9.0**, and **net10.0** with `[MemoryDiagnoser]` enabled (reports allocated bytes per operation).
 
 To run locally (Release mode required):
 
