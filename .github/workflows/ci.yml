@@ -36,4 +36,19 @@ jobs:
         run: dotnet build src/NetFramework.Task.Management.sln --configuration Release --no-restore
 
       - name: Test on .NET ${{ matrix.dotnet-version }}
-        run: dotnet test src/NetFramework.Tasks.Management.xUnit.Tests/ --configuration Release --no-build --framework net${{ matrix.dotnet-version }} --logger "console;verbosity=normal"
+        run: |
+          dotnet test src/NetFramework.Tasks.Management.xUnit.Tests/ \
+            --configuration Release \
+            --no-build \
+            --framework net${{ matrix.dotnet-version }} \
+            --logger "console;verbosity=normal" \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./coverage
+          flags: net${{ matrix.dotnet-version }}
+          fail_ci_if_error: false

@@ -117,7 +117,7 @@ namespace NetFramework.Tasks.Management.Benchmarks
 
         [Benchmark]
         public TaskManagementStatus DeleteTask()
-            => _tasks.DeleteTask(_taskName, sendDataToInternalQueue: false);
+            => _tasks.DeleteTask(_taskName, sendDisposedDataToInternalQueue: false);
 
         [IterationCleanup(Targets = new[] { nameof(DeleteTask) })]
         public void CleanupDelete()
@@ -141,7 +141,7 @@ namespace NetFramework.Tasks.Management.Benchmarks
             _tasks.StartTask(_taskName);
             _tasks.CancelTask(_taskName);
             _tasks.CheckTaskStatusCompleted(_taskName, retry: 5, millisecondsCancellationWait: 500);
-            return _tasks.DeleteTask(_taskName, sendDataToInternalQueue: false);
+            return _tasks.DeleteTask(_taskName, sendDisposedDataToInternalQueue: false);
         }
 
         [IterationCleanup(Targets = new[] { nameof(FullLifecycle) })]

@@ -37,8 +37,8 @@ services.AddSingleton<ILogger>(sp =>
     sp.GetRequiredService<ILoggerFactory>().CreateLogger("NetFramework.Tasks.Management"));
 ```
 
-## DeleteTask — Parameter Name Mismatch
-The `ITaskManagement` interface declares the second parameter as `sendDisposedDataToInternalQueue`, but the `TasksManagement` implementation uses `sendDataToInternalQueue`. Always use the implementation's name when calling via the concrete type (e.g. in benchmarks). When calling through the interface, use the interface name.
+## DeleteTask — Parameter Name
+The second parameter of `DeleteTask` is `sendDisposedDataToInternalQueue` in both the interface and the implementation. Always use this name when calling with a named argument.
 
 ## Benchmarks
 BenchmarkDotNet benchmarks live in `benchmarks/NetFramework.Tasks.Management.Benchmarks/` and target `net8.0;net9.0;net10.0`. Rules:

@@ -111,7 +111,7 @@ namespace NetFramework.Tasks.Management.Tests
             taskManagementStatus = _taskManagement.StartTask(simpleTaskName);
             taskManagementStatus = _taskManagement.CancelTask(simpleTaskName);
             taskManagementStatus = _taskManagement.CheckTaskStatusCompleted(simpleTaskName, retry: 1, millisecondsCancellationWait: 1000);
-            taskManagementStatus = _taskManagement.DeleteTask(simpleTaskName, sendDataToInternalQueue: true);
+            taskManagementStatus = _taskManagement.DeleteTask(simpleTaskName, sendDisposedDataToInternalQueue: true);
             taskManagementStatus = _taskManagement.DequeueTaskDisposedDataModel(out TaskDisposedDataModel taskDisposedDataModel);
 
             Assert.Equal(TaskManagementStatus.ObjectInfoDequeued, taskManagementStatus);
