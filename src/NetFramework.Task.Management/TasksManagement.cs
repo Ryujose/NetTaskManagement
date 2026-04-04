@@ -396,14 +396,6 @@ namespace NetFramework.Tasks.Management
 
                         anyTaskFound = true;
 
-                        if (taskData.Value.CancellationTokenSource == null)
-                        {
-                            if (!tasksNotCancelled.TryAdd(taskData.Key, TaskManagementStatus.CancellationTokenSourceNotFound))
-                                _logger.LogWarning($"{nameof(CancelAllTasks)}-{taskData.Key} doesn't have a cancellation token source");
-
-                            continue;
-                        }
-
                         if (taskData.Value.Task.IsCompleted)
                         {
                             if (!tasksNotCancelled.TryAdd(taskData.Key, TaskManagementStatus.Completed))
@@ -432,14 +424,6 @@ namespace NetFramework.Tasks.Management
                             return;
 
                         Interlocked.Exchange(ref anyTaskFound, 1);
-
-                        if (taskData.Value.CancellationTokenSource == null)
-                        {
-                            if (!tasksNotCancelled.TryAdd(taskData.Key, TaskManagementStatus.CancellationTokenSourceNotFound))
-                                _logger.LogWarning($"{nameof(CancelAllTasks)}-{taskData.Key} doesn't have a cancellation token source");
-
-                            return;
-                        }
 
                         if (taskData.Value.Task.IsCompleted)
                         {

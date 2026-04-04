@@ -176,6 +176,126 @@ namespace NetFramework.Tasks.Management.Tests
         }
 
         [Fact]
+        public void ParallelPathWithExceptListCancelAllTasks_AllTasksCancelPetitionAcceptedStatus()
+        {
+            var logger = new Mock<ILogger>();
+            TasksManagement taskManagement = new TasksManagement(logger.Object);
+
+            int originalThreshold = TasksManagement.CancelAllTasksParallelThreshold;
+            try
+            {
+                TasksManagement.CancelAllTasksParallelThreshold = 5;
+
+                var ctsList = new System.Collections.Generic.List<CancellationTokenSource>();
+                for (int i = 1; i <= 6; i++)
+                {
+                    var cts = new CancellationTokenSource();
+                    ctsList.Add(cts);
+                    taskManagement.RegisterTask($"parallel-except-task-{i}", new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), cts);
+                    taskManagement.StartTask($"parallel-except-task-{i}");
+                }
+
+                // Except the first two — the parallel path must skip them and cancel the rest.
+                var tasksCancelPetitionFailedRef = new ConcurrentDictionary<string, TaskManagementStatus>();
+                TaskManagementStatus taskManagementStatus = taskManagement.CancelAllTasks(
+                    new List<string> { "parallel-except-task-1", "parallel-except-task-2" },
+                    ref tasksCancelPetitionFailedRef);
+
+                Assert.Equal(TaskManagementStatus.AllTasksCancelPetitionAccepted, taskManagementStatus);
+            }
+            finally
+            {
+                TasksManagement.CancelAllTasksParallelThreshold = originalThreshold;
+                taskManagement.ClearConcurrentLists();
+            }
+        }
+
+        [Fact]
+        public void ParallelPathAlreadyCompletedTaskCancelAllTasks_AllTasksCancelPetitionAcceptedStatus()
+        {
+            var logger = new Mock<ILogger>();
+            TasksManagement taskManagement = new TasksManagement(logger.Object);
+
+            int originalThreshold = TasksManagement.CancelAllTasksParallelThreshold;
+            try
+            {
+                TasksManagement.CancelAllTasksParallelThreshold = 5;
+
+                for (int i = 1; i <= 6; i++)
+                {
+                    var cts = new CancellationTokenSource();
+                    taskManagement.RegisterTask($"parallel-completed-task-{i}", _ => { }, cts);
+                    taskManagement.StartTask($"parallel-completed-task-{i}");
+                }
+
+                // Wait for all trivially-completing tasks to reach RanToCompletion so the
+                // parallel path hits the IsCompleted branch for every entry.
+                var spinWait = new SpinWait();
+                bool allDone = false;
+                while (!allDone)
+                {
+                    allDone = true;
+                    var statuses = taskManagement.GetTasksStatus();
+                    foreach (var s in statuses.Values)
+                    {
+                        if (!s.Equals(System.Threading.Tasks.TaskStatus.RanToCompletion))
+                        {
+                            allDone = false;
+                            break;
+                        }
+                    }
+                    if (!allDone) spinWait.SpinOnce();
+                }
+
+                var tasksCancelPetitionFailedRef = new ConcurrentDictionary<string, TaskManagementStatus>();
+                TaskManagementStatus taskManagementStatus = taskManagement.CancelAllTasks(null, ref tasksCancelPetitionFailedRef);
+
+                Assert.Equal(TaskManagementStatus.AllTasksCancelPetitionAccepted, taskManagementStatus);
+            }
+            finally
+            {
+                TasksManagement.CancelAllTasksParallelThreshold = originalThreshold;
+                taskManagement.ClearConcurrentLists();
+            }
+        }
+
+        [Fact]
+        public void ParallelPathAllTasksExceptedCancelAllTasks_TasksNotFoundToBeCancelledStatus()
+        {
+            var logger = new Mock<ILogger>();
+            TasksManagement taskManagement = new TasksManagement(logger.Object);
+
+            int originalThreshold = TasksManagement.CancelAllTasksParallelThreshold;
+            try
+            {
+                TasksManagement.CancelAllTasksParallelThreshold = 5;
+
+                var taskNames = new List<string>();
+                for (int i = 1; i <= 6; i++)
+                {
+                    var name = $"parallel-allexcepted-task-{i}";
+                    taskNames.Add(name);
+                    var cts = new CancellationTokenSource();
+                    taskManagement.RegisterTask(name, new ActionsUtilitiesTests().ActionObjectCancellationTokenSource(), cts);
+                    taskManagement.StartTask(name);
+                }
+
+                // All tasks are excepted — parallel path sets anyTaskFound to 0
+                // and must return TasksNotFoundToBeCancelled.
+                var tasksCancelPetitionFailedRef = new ConcurrentDictionary<string, TaskManagementStatus>();
+                TaskManagementStatus taskManagementStatus = taskManagement.CancelAllTasks(taskNames, ref tasksCancelPetitionFailedRef);
+
+                Assert.Equal(TaskManagementStatus.TasksNotFoundToBeCancelled, taskManagementStatus);
+                Assert.Empty(tasksCancelPetitionFailedRef);
+            }
+            finally
+            {
+                TasksManagement.CancelAllTasksParallelThreshold = originalThreshold;
+                taskManagement.ClearConcurrentLists();
+            }
+        }
+
+        [Fact]
         public void AlreadyCompletedTaskCancelAllTasks_AllTasksCancelPetitionAcceptedStatus()
         {
             var logger = new Mock<ILogger>();
