@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1775341171025,
+  "lastUpdate": 1775342310699,
   "repoUrl": "https://github.com/Ryujose/NetTaskManagement",
   "entries": {
     "Benchmark": [
@@ -1978,6 +1978,876 @@ window.BENCHMARK_DATA = {
             "value": 462771468.8,
             "unit": "ns",
             "range": "± 55220588.99967223"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "sora_ryu@hotmail.com",
+            "name": "Jose Luis Guerra Infante",
+            "username": "Ryujose"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "3a584f5bebf7e89ab58725c7cc4b7a456e2ea6c3",
+          "message": "feat: performance improvements log (#27)\n\n* feat: add Dataflow vs NetTaskManagement benchmarks and optimize task cancellation logic\n\n- Introduced `DataflowComparisonBenchmarks`:\n  - Compares NetTaskManagement and TPL Dataflow for starting, canceling, and processing N workers/items.\n  - Helps developers choose between tools based on specific use cases.\n  - Added details and execution instructions to `README.md`.\n- Enhanced `CancelAllTasks()`:\n  - Introduced `CancelAllTasksParallelThreshold` for selective parallelization based on task count.\n  - Optimized logic for sequential vs parallel task cancellation to minimize overhead.\n  - Improved handling for completed tasks and cancellation token sources.\n- Updated CI benchmark workflow to include the new comparison benchmarks.\n- Extended documentation with detailed benchmark descriptions and updated example output.\n\nSigned-off-by: Jose Luis Guerra Infante <sora_ryu@hotmail.com>\n\n* feat: add unit tests for completed tasks and task cancellation edge cases\n\n- Introduced `AlreadyCompletedTaskCheckTaskStatusCompleted_CompletedStatus` to validate handling of completed tasks in `CheckTaskStatusCompleted()`.\n- Added `AllTasksInExceptListCancelAllTasks_TasksNotFoundToBeCancelledStatus` test to confirm behavior when all tasks are excluded from cancellation.\n- Implemented `AlreadyCompletedTaskCancelAllTasks_AllTasksCancelPetitionAcceptedStatus` to verify cancellation behavior for already completed tasks.\n\nSigned-off-by: Jose Luis Guerra Infante <sora_ryu@hotmail.com>\n\n* feat: add internal visibility for parallel cancellation testing and new unit test\n\n- Exposed `CancelAllTasksParallelThreshold` as `internal` to facilitate testing of parallel cancellation logic.\n- Added `ParallelPathCancelAllTasks_AllTasksCancelPetitionAcceptedStatus` unit test to validate parallel task cancellation behavior with a reduced threshold.\n- Modified project file to include `InternalsVisibleTo` for test assembly access.\n\nSigned-off-by: Jose Luis Guerra Infante <sora_ryu@hotmail.com>\n\n* feat: add unit tests for additional edge cases in `CancelAllTasks()`\n\n- Added three new unit tests to validate behavior under diverse scenarios:\n  - `ParallelPathWithExceptListCancelAllTasks_AllTasksCancelPetitionAcceptedStatus`: Verifies cancellation of tasks excluding specific exceptions.\n  - `ParallelPathAlreadyCompletedTaskCancelAllTasks_AllTasksCancelPetitionAcceptedStatus`: Confirms behavior when all tasks are already completed.\n  - `ParallelPathAllTasksExceptedCancelAllTasks_TasksNotFoundToBeCancelledStatus`: Ensures correct status when all tasks are excluded from cancellation.\n- Refactored `CancelAllTasks()` to remove redundant checks for `CancellationTokenSource`, improving code readability and maintainability.\n\nSigned-off-by: Jose Luis Guerra Infante <sora_ryu@hotmail.com>\n\n* feat: expand Dataflow vs NetTaskManagement benchmarks with detailed scenarios and threading model distinctions\n\n- Enhanced `DataflowComparisonBenchmarks` with new benchmarking scenarios:\n  - Added separate benchmarks for `LongRunning` and `Pool` task creation options.\n  - Introduced `ParallelBlockingWork` benchmark to measure throughput for blocking workloads.\n- Implemented `CancelWaitDeleteAll()` to ensure proper teardown of tasks in benchmarks.\n- Detailed threading model trade-offs for different task behaviors (e.g., high-throughput anonymous items vs long-running dedicated workers).\n- Improved clarity with updated benchmark naming and comments:\n  - Split benchmarks to explicitly track `LongRunning` vs `Pool` configurations.\n  - Expanded documentation of benchmarks' purpose, implementation, and tradeoffs.\n- Updated iteration setup and cleanup logic to support task type distinctions.\n- Ensured accurate benchmarking by accounting for thread-pool injection delays in `ParallelBlockingWork`.\n\nSigned-off-by: Jose Luis Guerra Infante <sora_ryu@hotmail.com>\n\n* feat: improve logging for task completion checks in `TasksManagement`\n\n- Updated `_logger.LogDebug` to use structured logging with placeholders, improving log clarity and parameterization.\n- Replaced interpolated string with structured log format for better log analysis and performance.\n\nSigned-off-by: Jose Luis Guerra Infante <sora_ryu@hotmail.com>\n\n* feat: update `README.md` with threading model benchmarks and usage guidance\n\n- Added detailed descriptions of `LongRunning` vs `None` threading models, including performance trade-offs.\n- Enhanced benchmark comparison for blocking workloads and thread-pool behavior.\n- Updated `DataflowComparisonBenchmarks` with expanded scenarios and threading distinctions.\n\nSigned-off-by: Jose Luis Guerra Infante <sora_ryu@hotmail.com>\n\n---------\n\nSigned-off-by: Jose Luis Guerra Infante <sora_ryu@hotmail.com>",
+          "timestamp": "2026-04-05T00:06:32+02:00",
+          "tree_id": "545b3a013441fab2ff5c763410fc5428ea311116",
+          "url": "https://github.com/Ryujose/NetTaskManagement/commit/3a584f5bebf7e89ab58725c7cc4b7a456e2ea6c3"
+        },
+        "date": 1775342310384,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.CancelAllTasksBenchmarks.CancelAllTasks(TaskCount: 1)",
+            "value": 15126.3,
+            "unit": "ns",
+            "range": "± 2317.943851778986"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.CancelAllTasksBenchmarks.CancelAllTasks(TaskCount: 10)",
+            "value": 30616.5,
+            "unit": "ns",
+            "range": "± 3081.302808878089"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.CancelAllTasksBenchmarks.CancelAllTasks(TaskCount: 50)",
+            "value": 44294.75,
+            "unit": "ns",
+            "range": "± 892.9342547653401"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.RegisterTask",
+            "value": 6173.5,
+            "unit": "ns",
+            "range": "± 78.04912982645398"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.StartTask",
+            "value": 8182.1,
+            "unit": "ns",
+            "range": "± 1993.2663645383675"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.CancelTask",
+            "value": 6504.25,
+            "unit": "ns",
+            "range": "± 402.3185926600957"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.DeleteTask",
+            "value": 238971,
+            "unit": "ns",
+            "range": "± 1438.4952786389904"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.FullLifecycle",
+            "value": 270688.5,
+            "unit": "ns",
+            "range": "± 17832.539471426946"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.GetTasksStatusBenchmarks.GetTasksStatus(TaskCount: 1)",
+            "value": 230.29128408432007,
+            "unit": "ns",
+            "range": "± 2.1644026403411014"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.GetTasksStatusBenchmarks.GetTasksStatus(TaskCount: 10)",
+            "value": 410.21123218536377,
+            "unit": "ns",
+            "range": "± 0.865653110885695"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.GetTasksStatusBenchmarks.GetTasksStatus(TaskCount: 50)",
+            "value": 1719.8824262619019,
+            "unit": "ns",
+            "range": "± 4.805862301214048"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_StartNWorkers_LongRunning(N: 10)",
+            "value": 40435583.4,
+            "unit": "ns",
+            "range": "± 6029246.547099878"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_StartNWorkers_Pool(N: 10)",
+            "value": 21439,
+            "unit": "ns",
+            "range": "± 4033.2498682824003"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_StartNWorkers(N: 10)",
+            "value": 17882.75,
+            "unit": "ns",
+            "range": "± 1882.5979168868394"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_CancelNWorkers_LongRunning(N: 10)",
+            "value": 35630.5,
+            "unit": "ns",
+            "range": "± 4474.002346892545"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_CancelNWorkers_Pool(N: 10)",
+            "value": 39260.75,
+            "unit": "ns",
+            "range": "± 6284.063673292943"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_CancelNWorkers(N: 10)",
+            "value": 1984.3,
+            "unit": "ns",
+            "range": "± 159.30536714122346"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ProcessNItems_LongRunning(N: 10)",
+            "value": 3450657.5,
+            "unit": "ns",
+            "range": "± 65978.02296219552"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ProcessNItems_Pool(N: 10)",
+            "value": 2147637.2,
+            "unit": "ns",
+            "range": "± 20366.75159911369"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_ProcessNItems(N: 10)",
+            "value": 66379.6,
+            "unit": "ns",
+            "range": "± 15774.844588774877"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ParallelBlockingWork_LongRunning(N: 10)",
+            "value": 24443082.75,
+            "unit": "ns",
+            "range": "± 416078.0561588374"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ParallelBlockingWork_Pool(N: 10)",
+            "value": 42951600.25,
+            "unit": "ns",
+            "range": "± 120152.13199488666"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_ParallelBlockingWork(N: 10)",
+            "value": 40368949.25,
+            "unit": "ns",
+            "range": "± 19726.480077550583"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_StartNWorkers_LongRunning(N: 50)",
+            "value": 2632069396.8,
+            "unit": "ns",
+            "range": "± 109486056.01307206"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_StartNWorkers_Pool(N: 50)",
+            "value": 64903.6,
+            "unit": "ns",
+            "range": "± 11769.24773721753"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_StartNWorkers(N: 50)",
+            "value": 34591.3,
+            "unit": "ns",
+            "range": "± 6199.266142052622"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_CancelNWorkers_LongRunning(N: 50)",
+            "value": 40704.8,
+            "unit": "ns",
+            "range": "± 6959.174714001654"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_CancelNWorkers_Pool(N: 50)",
+            "value": 33071.5,
+            "unit": "ns",
+            "range": "± 8506.849887002827"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_CancelNWorkers(N: 50)",
+            "value": 1491,
+            "unit": "ns",
+            "range": "± 578.8704518283862"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ProcessNItems_LongRunning(N: 50)",
+            "value": 15662448.4,
+            "unit": "ns",
+            "range": "± 716956.6116127949"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ProcessNItems_Pool(N: 50)",
+            "value": 9795872.4,
+            "unit": "ns",
+            "range": "± 111029.38988529118"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_ProcessNItems(N: 50)",
+            "value": 93389,
+            "unit": "ns",
+            "range": "± 18411.655330252084"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ParallelBlockingWork_LongRunning(N: 50)",
+            "value": 38261984.9,
+            "unit": "ns",
+            "range": "± 622609.7679327718"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ParallelBlockingWork_Pool(N: 50)",
+            "value": 245220196.4,
+            "unit": "ns",
+            "range": "± 11764516.45010662"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_ParallelBlockingWork(N: 50)",
+            "value": 237468383.9,
+            "unit": "ns",
+            "range": "± 33038900.908617392"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_StartNWorkers_LongRunning(N: 100)",
+            "value": 24650646591.8,
+            "unit": "ns",
+            "range": "± 595353062.8029394"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_StartNWorkers_Pool(N: 100)",
+            "value": 107842.1,
+            "unit": "ns",
+            "range": "± 27045.72285593417"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_StartNWorkers(N: 100)",
+            "value": 55874.25,
+            "unit": "ns",
+            "range": "± 3947.023298216856"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_CancelNWorkers_LongRunning(N: 100)",
+            "value": 1743227,
+            "unit": "ns",
+            "range": "± 1482192.1713875365"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_CancelNWorkers_Pool(N: 100)",
+            "value": 44498.1,
+            "unit": "ns",
+            "range": "± 11616.566373072552"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_CancelNWorkers(N: 100)",
+            "value": 718.4,
+            "unit": "ns",
+            "range": "± 297.5790651238759"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ProcessNItems_LongRunning(N: 100)",
+            "value": 30517681,
+            "unit": "ns",
+            "range": "± 2129916.3489556736"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ProcessNItems_Pool(N: 100)",
+            "value": 23116702.6,
+            "unit": "ns",
+            "range": "± 176964.7307425974"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_ProcessNItems(N: 100)",
+            "value": 134363.5,
+            "unit": "ns",
+            "range": "± 13526.29448518699"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ParallelBlockingWork_LongRunning(N: 100)",
+            "value": 56843294.4,
+            "unit": "ns",
+            "range": "± 3687943.494523377"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ParallelBlockingWork_Pool(N: 100)",
+            "value": 335712586.2,
+            "unit": "ns",
+            "range": "± 11107049.961300466"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_ParallelBlockingWork(N: 100)",
+            "value": 462904503.6,
+            "unit": "ns",
+            "range": "± 55103452.900644556"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.CancelAllTasksBenchmarks.CancelAllTasks(TaskCount: 1)",
+            "value": 9310.25,
+            "unit": "ns",
+            "range": "± 183.49455032779585"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.CancelAllTasksBenchmarks.CancelAllTasks(TaskCount: 10)",
+            "value": 11595.2,
+            "unit": "ns",
+            "range": "± 597.6995064411548"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.CancelAllTasksBenchmarks.CancelAllTasks(TaskCount: 50)",
+            "value": 19690.9,
+            "unit": "ns",
+            "range": "± 1216.271885722925"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.RegisterTask",
+            "value": 4889.75,
+            "unit": "ns",
+            "range": "± 29.33001875212493"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.StartTask",
+            "value": 9097,
+            "unit": "ns",
+            "range": "± 4052.67241048011"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.CancelTask",
+            "value": 4726.1,
+            "unit": "ns",
+            "range": "± 515.0032038735293"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.DeleteTask",
+            "value": 230871.5,
+            "unit": "ns",
+            "range": "± 6244.221355247853"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.FullLifecycle",
+            "value": 282112,
+            "unit": "ns",
+            "range": "± 12858.607467373751"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.GetTasksStatusBenchmarks.GetTasksStatus(TaskCount: 1)",
+            "value": 240.76573686599733,
+            "unit": "ns",
+            "range": "± 0.8647456264465191"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.GetTasksStatusBenchmarks.GetTasksStatus(TaskCount: 10)",
+            "value": 404.9618949890137,
+            "unit": "ns",
+            "range": "± 1.3724567009424251"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.GetTasksStatusBenchmarks.GetTasksStatus(TaskCount: 50)",
+            "value": 1774.185786819458,
+            "unit": "ns",
+            "range": "± 42.330965719595426"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_StartNWorkers_LongRunning(N: 10)",
+            "value": 34753861.8,
+            "unit": "ns",
+            "range": "± 3021528.5440725526"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_StartNWorkers_Pool(N: 10)",
+            "value": 22998.25,
+            "unit": "ns",
+            "range": "± 631.4688564503135"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_StartNWorkers(N: 10)",
+            "value": 18927.6,
+            "unit": "ns",
+            "range": "± 2703.026137498489"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_CancelNWorkers_LongRunning(N: 10)",
+            "value": 19428,
+            "unit": "ns",
+            "range": "± 4515.660693630557"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_CancelNWorkers_Pool(N: 10)",
+            "value": 15030.8,
+            "unit": "ns",
+            "range": "± 3597.9117832431634"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_CancelNWorkers(N: 10)",
+            "value": 302.75,
+            "unit": "ns",
+            "range": "± 55.918839997505906"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ProcessNItems_LongRunning(N: 10)",
+            "value": 2939562.75,
+            "unit": "ns",
+            "range": "± 214024.91164873776"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ProcessNItems_Pool(N: 10)",
+            "value": 2011563,
+            "unit": "ns",
+            "range": "± 35704.09592049629"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_ProcessNItems(N: 10)",
+            "value": 47072.75,
+            "unit": "ns",
+            "range": "± 15411.145022893876"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ParallelBlockingWork_LongRunning(N: 10)",
+            "value": 24564437.2,
+            "unit": "ns",
+            "range": "± 524203.59096366365"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ParallelBlockingWork_Pool(N: 10)",
+            "value": 51184337,
+            "unit": "ns",
+            "range": "± 11728761.19216484"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_ParallelBlockingWork(N: 10)",
+            "value": 40309776.9,
+            "unit": "ns",
+            "range": "± 47198.177028355654"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_StartNWorkers_LongRunning(N: 50)",
+            "value": 2711523606.9,
+            "unit": "ns",
+            "range": "± 219868993.7881216"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_StartNWorkers_Pool(N: 50)",
+            "value": 65769.75,
+            "unit": "ns",
+            "range": "± 16166.108547926224"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_StartNWorkers(N: 50)",
+            "value": 32544.4,
+            "unit": "ns",
+            "range": "± 9620.451252410148"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_CancelNWorkers_LongRunning(N: 50)",
+            "value": 35944.75,
+            "unit": "ns",
+            "range": "± 5943.82393049009"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_CancelNWorkers_Pool(N: 50)",
+            "value": 25472.5,
+            "unit": "ns",
+            "range": "± 4479.581676897967"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_CancelNWorkers(N: 50)",
+            "value": 270.75,
+            "unit": "ns",
+            "range": "± 24.088378940891808"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ProcessNItems_LongRunning(N: 50)",
+            "value": 13672701,
+            "unit": "ns",
+            "range": "± 274056.25396622496"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ProcessNItems_Pool(N: 50)",
+            "value": 8889395.8,
+            "unit": "ns",
+            "range": "± 64268.32709196654"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_ProcessNItems(N: 50)",
+            "value": 80364.2,
+            "unit": "ns",
+            "range": "± 25558.837888292182"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ParallelBlockingWork_LongRunning(N: 50)",
+            "value": 37434750.5,
+            "unit": "ns",
+            "range": "± 726453.379922277"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ParallelBlockingWork_Pool(N: 50)",
+            "value": 248778917.3,
+            "unit": "ns",
+            "range": "± 16922467.628457017"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_ParallelBlockingWork(N: 50)",
+            "value": 237548582.6,
+            "unit": "ns",
+            "range": "± 33031043.635232784"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_StartNWorkers_LongRunning(N: 100)",
+            "value": 24287742203.9,
+            "unit": "ns",
+            "range": "± 923878789.5743738"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_StartNWorkers_Pool(N: 100)",
+            "value": 81522,
+            "unit": "ns",
+            "range": "± 16223.787443134233"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_StartNWorkers(N: 100)",
+            "value": 54811.1,
+            "unit": "ns",
+            "range": "± 11610.804743858196"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_CancelNWorkers_LongRunning(N: 100)",
+            "value": 133220.75,
+            "unit": "ns",
+            "range": "± 191309.36860379664"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_CancelNWorkers_Pool(N: 100)",
+            "value": 37423,
+            "unit": "ns",
+            "range": "± 2163.730266615196"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_CancelNWorkers(N: 100)",
+            "value": 595.5,
+            "unit": "ns",
+            "range": "± 90.73955403607991"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ProcessNItems_LongRunning(N: 100)",
+            "value": 28654046.2,
+            "unit": "ns",
+            "range": "± 2289969.246472253"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ProcessNItems_Pool(N: 100)",
+            "value": 18435419,
+            "unit": "ns",
+            "range": "± 482071.27291649865"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_ProcessNItems(N: 100)",
+            "value": 153232.4,
+            "unit": "ns",
+            "range": "± 45064.49625592191"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ParallelBlockingWork_LongRunning(N: 100)",
+            "value": 55828825.4,
+            "unit": "ns",
+            "range": "± 2167105.9371010913"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ParallelBlockingWork_Pool(N: 100)",
+            "value": 317024147,
+            "unit": "ns",
+            "range": "± 9757081.113696538"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_ParallelBlockingWork(N: 100)",
+            "value": 462913232.2,
+            "unit": "ns",
+            "range": "± 55084020.78024895"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.CancelAllTasksBenchmarks.CancelAllTasks(TaskCount: 1)",
+            "value": 9717.5,
+            "unit": "ns",
+            "range": "± 237.24565327946473"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.CancelAllTasksBenchmarks.CancelAllTasks(TaskCount: 10)",
+            "value": 11729.5,
+            "unit": "ns",
+            "range": "± 140.07854939283175"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.CancelAllTasksBenchmarks.CancelAllTasks(TaskCount: 50)",
+            "value": 19727.4,
+            "unit": "ns",
+            "range": "± 424.17130973228257"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.RegisterTask",
+            "value": 5060.4,
+            "unit": "ns",
+            "range": "± 139.29572857772774"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.StartTask",
+            "value": 9871.25,
+            "unit": "ns",
+            "range": "± 1630.0884178473264"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.CancelTask",
+            "value": 4588.25,
+            "unit": "ns",
+            "range": "± 69.37999231286591"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.DeleteTask",
+            "value": 221066,
+            "unit": "ns",
+            "range": "± 4906.595221400138"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.LifecycleBenchmarks.FullLifecycle",
+            "value": 291396,
+            "unit": "ns",
+            "range": "± 15402.85412945709"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.GetTasksStatusBenchmarks.GetTasksStatus(TaskCount: 1)",
+            "value": 191.53577556610108,
+            "unit": "ns",
+            "range": "± 2.1294414524519674"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.GetTasksStatusBenchmarks.GetTasksStatus(TaskCount: 10)",
+            "value": 388.4312129020691,
+            "unit": "ns",
+            "range": "± 1.7130685999521995"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.GetTasksStatusBenchmarks.GetTasksStatus(TaskCount: 50)",
+            "value": 1384.4340453147888,
+            "unit": "ns",
+            "range": "± 1.5894256398471924"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_StartNWorkers_LongRunning(N: 10)",
+            "value": 36537061,
+            "unit": "ns",
+            "range": "± 9952477.147474794"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_StartNWorkers_Pool(N: 10)",
+            "value": 24444,
+            "unit": "ns",
+            "range": "± 499.6864016560787"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_StartNWorkers(N: 10)",
+            "value": 23586.4,
+            "unit": "ns",
+            "range": "± 10021.30444602897"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_CancelNWorkers_LongRunning(N: 10)",
+            "value": 19604.4,
+            "unit": "ns",
+            "range": "± 2004.9101725513788"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_CancelNWorkers_Pool(N: 10)",
+            "value": 18784.1,
+            "unit": "ns",
+            "range": "± 7867.831804252046"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_CancelNWorkers(N: 10)",
+            "value": 301,
+            "unit": "ns",
+            "range": "± 54.53439281774392"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ProcessNItems_LongRunning(N: 10)",
+            "value": 3059600.4,
+            "unit": "ns",
+            "range": "± 98156.38004887915"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ProcessNItems_Pool(N: 10)",
+            "value": 1984237.4,
+            "unit": "ns",
+            "range": "± 46079.2558186436"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_ProcessNItems(N: 10)",
+            "value": 53147,
+            "unit": "ns",
+            "range": "± 18826.682235593184"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ParallelBlockingWork_LongRunning(N: 10)",
+            "value": 24166524.75,
+            "unit": "ns",
+            "range": "± 465628.4285023664"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ParallelBlockingWork_Pool(N: 10)",
+            "value": 51294676.8,
+            "unit": "ns",
+            "range": "± 11698826.269442663"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_ParallelBlockingWork(N: 10)",
+            "value": 40332543.9,
+            "unit": "ns",
+            "range": "± 63662.8700052079"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_StartNWorkers_LongRunning(N: 50)",
+            "value": 2649737377.5,
+            "unit": "ns",
+            "range": "± 72649738.900975"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_StartNWorkers_Pool(N: 50)",
+            "value": 65799.7,
+            "unit": "ns",
+            "range": "± 16754.661998978077"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_StartNWorkers(N: 50)",
+            "value": 27846,
+            "unit": "ns",
+            "range": "± 4469.803351379119"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_CancelNWorkers_LongRunning(N: 50)",
+            "value": 33563,
+            "unit": "ns",
+            "range": "± 6054.430581538339"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_CancelNWorkers_Pool(N: 50)",
+            "value": 20872,
+            "unit": "ns",
+            "range": "± 2325.3158925186917"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_CancelNWorkers(N: 50)",
+            "value": 887.2,
+            "unit": "ns",
+            "range": "± 331.10829044287004"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ProcessNItems_LongRunning(N: 50)",
+            "value": 14714930.5,
+            "unit": "ns",
+            "range": "± 173136.40005209766"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ProcessNItems_Pool(N: 50)",
+            "value": 8565984.75,
+            "unit": "ns",
+            "range": "± 22710.32703969716"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_ProcessNItems(N: 50)",
+            "value": 98778,
+            "unit": "ns",
+            "range": "± 34507.67547227718"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ParallelBlockingWork_LongRunning(N: 50)",
+            "value": 38339753.9,
+            "unit": "ns",
+            "range": "± 1955468.7298325177"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ParallelBlockingWork_Pool(N: 50)",
+            "value": 215961210.4,
+            "unit": "ns",
+            "range": "± 32634447.80724808"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_ParallelBlockingWork(N: 50)",
+            "value": 237458399.4,
+            "unit": "ns",
+            "range": "± 33023967.414905272"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_StartNWorkers_LongRunning(N: 100)",
+            "value": 24650010182.8,
+            "unit": "ns",
+            "range": "± 1373354337.547924"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_StartNWorkers_Pool(N: 100)",
+            "value": 91591.6,
+            "unit": "ns",
+            "range": "± 16082.861275283076"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_StartNWorkers(N: 100)",
+            "value": 53052.8,
+            "unit": "ns",
+            "range": "± 9915.642248487991"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_CancelNWorkers_LongRunning(N: 100)",
+            "value": 89521.75,
+            "unit": "ns",
+            "range": "± 100048.74272198527"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_CancelNWorkers_Pool(N: 100)",
+            "value": 31566.6,
+            "unit": "ns",
+            "range": "± 1173.379009527612"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_CancelNWorkers(N: 100)",
+            "value": 591.8,
+            "unit": "ns",
+            "range": "± 106.91211343902991"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ProcessNItems_LongRunning(N: 100)",
+            "value": 28093090.3,
+            "unit": "ns",
+            "range": "± 932448.4687502575"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ProcessNItems_Pool(N: 100)",
+            "value": 17651173.25,
+            "unit": "ns",
+            "range": "± 65365.16814213821"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_ProcessNItems(N: 100)",
+            "value": 144135.5,
+            "unit": "ns",
+            "range": "± 32930.422446424825"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ParallelBlockingWork_LongRunning(N: 100)",
+            "value": 55758213.6,
+            "unit": "ns",
+            "range": "± 3000808.352404865"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.NTM_ParallelBlockingWork_Pool(N: 100)",
+            "value": 425162508.3,
+            "unit": "ns",
+            "range": "± 40877808.95573322"
+          },
+          {
+            "name": "NetFramework.Tasks.Management.Benchmarks.DataflowComparisonBenchmarks.Dataflow_ParallelBlockingWork(N: 100)",
+            "value": 462775997,
+            "unit": "ns",
+            "range": "± 55138174.180899695"
           }
         ]
       }
